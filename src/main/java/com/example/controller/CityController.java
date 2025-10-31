@@ -21,7 +21,7 @@ public class CityController {
         this.cityService = cityService;
     }
 
-    @PostMapping("/add")
+    @PostMapping("/")
     public ResponseEntity<?> addCity(@RequestBody City city) {
         try {
             if (city.getName() == null || city.getName().trim().isEmpty()) {
@@ -68,7 +68,7 @@ public class CityController {
         }
     }
 
-    @GetMapping("/get-by-id/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<?> getCity(@PathVariable("id") Long id) {
         try {
             if (id == null || id <= 0) {
@@ -87,7 +87,7 @@ public class CityController {
         }
     }
 
-    @GetMapping("/all")
+    @GetMapping("/")
     public ResponseEntity<?> getAllCities(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "5") int size,
@@ -170,7 +170,7 @@ public class CityController {
         }
     }
 
-    @PutMapping("/update-by-id/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<?> updateCity(@PathVariable("id") Long id, @RequestBody City city) {
         try {
             if (id == null || id <= 0) {
@@ -227,7 +227,7 @@ public class CityController {
         }
     }
 
-    @DeleteMapping("/delete-by-id/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteCity(@PathVariable("id") Long id) {
         try {
             if (id == null || id <= 0) {

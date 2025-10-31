@@ -84,22 +84,13 @@ class CityService {
                 sortDirection: sortDirection
             });
 
-            if (filters.id) params.append('idFilter', filters.id);
-            if (filters.name) params.append('nameFilter', filters.name);
-            if (filters.coordinatesX) params.append('coordinatesXFilter', filters.coordinatesX);
-            if (filters.coordinatesY) params.append('coordinatesYFilter', filters.coordinatesY);
-            if (filters.creationDate) params.append('creationDateFilter', filters.creationDate);
-            if (filters.area) params.append('areaFilter', filters.area);
-            if (filters.population) params.append('populationFilter', filters.population);
-            if (filters.establishmentDate) params.append('establishmentDateFilter', filters.establishmentDate);
-            if (filters.capital) params.append('capitalFilter', filters.capital);
-            if (filters.metersAboveSeaLevel) params.append('metersAboveSeaLevelFilter', filters.metersAboveSeaLevel);
-            if (filters.timezone) params.append('timezoneFilter', filters.timezone);
-            if (filters.carCode) params.append('carCodeFilter', filters.carCode);
-            if (filters.government) params.append('governmentFilter', filters.government);
-            if (filters.governor) params.append('governorFilter', filters.governor);
+            Object.entries(filters).forEach(([key, value]) => {
+                if (value !== null && value !== undefined && value !== '') {
+                    params.append(`${key}Filter`, value.toString());
+                }
+            });
 
-            return await this.request(`/all?${params}`);
+            return await this.request(`/?${params}`);
         } catch (error) {
             throw new Error(`Failed to fetch cities: ${error.message}`);
         }
@@ -110,7 +101,7 @@ class CityService {
             if (!id || id <= 0) {
                 throw new Error('Invalid city ID provided');
             }
-            return await this.request(`/get-by-id/${id}`);
+            return await this.request(`/${id}`);
         } catch (error) {
             throw new Error(`Failed to fetch city: ${error.message}`);
         }
@@ -124,7 +115,7 @@ class CityService {
 
             this.validateCityData(city);
 
-            return await this.request('/add', {
+            return await this.request('/', {
                 method: 'POST',
                 body: city,
             });
@@ -145,7 +136,7 @@ class CityService {
 
             this.validateCityData(city);
 
-            return await this.request(`/update-by-id/${id}`, {
+            return await this.request(`/${id}`, {
                 method: 'PUT',
                 body: city,
             });
@@ -160,13 +151,14 @@ class CityService {
                 throw new Error('Invalid city ID provided');
             }
 
-            return await this.request(`/delete-by-id/${id}`, {
+            return await this.request(`/${id}`, {
                 method: 'DELETE',
             });
         } catch (error) {
             throw new Error(`Failed to delete city: ${error.message}`);
         }
     }
+
 
     async getSumOfTimezones() {
         try {
@@ -189,7 +181,6 @@ class CityService {
             if (timezone === null || timezone === undefined) {
                 throw new Error('Timezone value is required');
             }
-
             return await this.request(`/timezone-less-than/${timezone}`);
         } catch (error) {
             throw new Error(`Failed to fetch cities by timezone: ${error.message}`);
@@ -227,7 +218,6 @@ class CityService {
             throw new Error(`Failed to fetch coordinates: ${error.message}`);
         }
     }
-
 
     validateCityData(city) {
         const errors = [];
