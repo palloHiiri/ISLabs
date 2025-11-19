@@ -18,7 +18,9 @@ const CityForm = ({ city, onSave, onCancel }) => {
         timezone: 0,
         carCode: null,
         government: 'ARISTOCRACY',
-        governor: { name: '' }
+        governor: { name: '', passport: 0},
+        postalCode: 0,
+        oktmo: 0,
     });
     const [errors, setErrors] = useState({});
     const [isLoading, setIsLoading] = useState(false);
@@ -42,7 +44,9 @@ const CityForm = ({ city, onSave, onCancel }) => {
                 ...city,
                 establishmentDate: city.establishmentDate || '',
                 metersAboveSeaLevel: city.metersAboveSeaLevel || null,
-                carCode: city.carCode || null
+                carCode: city.carCode || null,
+                postalCode: city.postalCode || '',
+                oktmo: city.oktmo || ''
             });
         }
         loadExistingData();
@@ -60,7 +64,7 @@ const CityForm = ({ city, onSave, onCancel }) => {
             const carCodes = [...new Set(coordinates.map(coord => coord.carCode).filter(code => code !== null))].sort((a, b) => a - b);
 
             setExistingData({
-                governors: governors.map(g => g.name).filter(name => name && name.trim()),
+                governors: governors,
                 coordinates: coordinates,
                 timezones,
                 carCodes
@@ -74,6 +78,7 @@ const CityForm = ({ city, onSave, onCancel }) => {
             setIsLoadingExistingData(false);
         }
     };
+
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -165,7 +170,7 @@ const CityForm = ({ city, onSave, onCancel }) => {
     const validateForm = () => {
         const newErrors = {};
 
-        // if (!formData.name?.trim()) newErrors.name = 'Name is required';
+        if (!formData.name?.trim()) newErrors.name = 'Name is required';
         if (!formData.population || formData.population <= 0) newErrors.population = 'Population must be > 0';
         if (!formData.area || formData.area <= 0) newErrors.area = 'Area must be > 0';
         if (formData.timezone < -13 || formData.timezone > 15) newErrors.timezone = 'Timezone must be between -13 and 15';
@@ -184,6 +189,15 @@ const CityForm = ({ city, onSave, onCancel }) => {
                 newErrors.establishmentDate = 'Establishment date cannot be in the future';
             }
         }
+        if(formData.postalCode < 100000 || formData.postalCode > 999999){
+            newErrors.postalCode = 'Postal code must be exactly 6 characters long';
+        }
+        if(formData.governor.passport < 1000000000 || formData.governor.passport > 9999999999){
+            newErrors.passport = 'Passport number must be exactly 10 characters long';
+        }
+        if(formData.oktmo < 10000000 || formData.oktmo > 99999999){
+            newErrors.oktmo = 'oktmo code must be exactly 8 characters long';
+        }
 
         setErrors(newErrors);
 
@@ -192,8 +206,8 @@ const CityForm = ({ city, onSave, onCancel }) => {
             if (['name', 'area', 'population'].includes(firstErrorField)) setActiveTab('basic');
             else if (firstErrorField.startsWith('coord')) setActiveTab('coordinates');
             else if (['government', 'capital'].includes(firstErrorField)) setActiveTab('government');
-            else if (['timezone', 'carCode', 'metersAboveSeaLevel', 'establishmentDate'].includes(firstErrorField)) setActiveTab('additional');
-            else if (firstErrorField === 'governorName') setActiveTab('governor');
+            else if (['timezone', 'carCode', 'metersAboveSeaLevel', 'establishmentDate', 'oktmo', 'postalCode'].includes(firstErrorField)) setActiveTab('additional');
+            else if (['governor, passport'].includes(firstErrorField)) setActiveTab('governor');
 
             showError('Please fix the errors in the form');
             return false;
@@ -225,7 +239,9 @@ const CityForm = ({ city, onSave, onCancel }) => {
                 population: Number(formData.population),
                 timezone: Number(formData.timezone),
                 carCode: formData.carCode || null,
-                metersAboveSeaLevel: formData.metersAboveSeaLevel || null
+                metersAboveSeaLevel: formData.metersAboveSeaLevel || null,
+                postalCode: formData.postalCode,
+                oktmo: formData.oktmo
             };
 
             if (city) {
@@ -258,6 +274,7 @@ const CityForm = ({ city, onSave, onCancel }) => {
     const getError = (field) => errors[field] || (field === 'governorName' ? errors.governorName : null);
 
     const formatCoordinates = (coord) => `(${coord.x}, ${coord.y})`;
+    const formatGovernor = (gov) => `${gov.name}, ${gov.passport}`;
 
     return (
         <div className="city-form-modal-overlay" onClick={handleCancel}>
@@ -496,6 +513,30 @@ const CityForm = ({ city, onSave, onCancel }) => {
                                     />
                                     {getError('carCode') && <span className="text-red-500">{getError('carCode')}</span>}
                                 </div>
+                                <div className="form-group">
+                                    <label>Postal Code</label>
+                                    <input
+                                        type="number"
+                                        name="postalCode"
+                                        value={formData.postalCode || ''}
+                                        onChange={handleChange}
+                                        placeholder="Optional"
+                                        className={getError('postalCode') ? 'border-red-500' : ''}
+                                    />
+                                    {getError('postalCode') && <span className="text-red-500">{getError('postalCode')}</span>}
+                                </div>
+                                <div className="form-group">
+                                    <label>oktmo</label>
+                                    <input
+                                        type="number"
+                                        name="oktmo"
+                                        value={formData.oktmo || ''}
+                                        onChange={handleChange}
+                                        placeholder="Optional"
+                                        className={getError('oktmo') ? 'border-red-500' : ''}
+                                    />
+                                    {getError('oktmo') && <span className="text-red-500">{getError('oktmo')}</span>}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -514,17 +555,31 @@ const CityForm = ({ city, onSave, onCancel }) => {
                             </div>
 
                             {inputModes.governor === 'input' ? (
-                                <div className="form-group max-w-md">
-                                    <label>Governor Name *</label>
-                                    <input
-                                        type="text"
-                                        name="governor.name"
-                                        value={formData.governor.name}
-                                        onChange={handleChange}
-                                        className={getError('governorName') ? 'border-red-500' : ''}
-                                        placeholder="Enter governor name..."
-                                    />
-                                    {getError('governorName') && <span className="text-red-500">{getError('governorName')}</span>}
+                                <div className="grid grid-cols-1 md:grid-cols-2">
+                                    <div className="form-group max-w-md">
+                                        <label>Governor Name *</label>
+                                        <input
+                                            type="text"
+                                            name="governor.name"
+                                            value={formData.governor.name}
+                                            onChange={handleChange}
+                                            className={getError('governorName') ? 'border-red-500' : ''}
+                                            placeholder="Enter governor name..."
+                                        />
+                                        {getError('governorName') && <span className="text-red-500">{getError('governorName')}</span>}
+                                    </div>
+                                    <div className="form-group max-w-md">
+                                        <label>Governor Passport</label>
+                                        <input
+                                            type="number"
+                                            name="governor.passport"
+                                            value={formData.governor.passport}
+                                            onChange={handleChange}
+                                            className={getError('passport') ? 'border-red-500' : ''}
+                                            placeholder="Enter governor name..."
+                                        />
+                                        {getError('passport') && <span className="text-red-500">{getError('passport')}</span>}
+                                    </div>
                                 </div>
                             ) : (
                                 <div className="form-group max-w-md">
@@ -533,17 +588,29 @@ const CityForm = ({ city, onSave, onCancel }) => {
                                         <div className="loading-state">Loading governors...</div>
                                     ) : existingData.governors.length > 0 ? (
                                         <select
-                                            value={formData.governor.name}
-                                            onChange={(e) => handleSelectChange('governor', e.target.value)}
+                                            value={formData.governor.passport || ''}
+                                            onChange={(e) => {
+                                                const selectedGov = existingData.governors.find(g => g.passport == e.target.value);
+                                                if (selectedGov) {
+                                                    setFormData(prev => ({
+                                                        ...prev,
+                                                        governor: { name: selectedGov.name, passport: selectedGov.passport }
+                                                    }));
+                                                }
+                                                if (errors.governorName) {
+                                                    setErrors(prev => ({ ...prev, governorName: null }));
+                                                }
+                                            }}
                                             className={getError('governorName') ? 'border-red-500' : ''}
                                         >
                                             <option value="">Select governor...</option>
-                                            {existingData.governors.map((governor, index) => (
-                                                <option key={index} value={governor}>
-                                                    {governor}
+                                            {existingData.governors.map((gov, index) => (
+                                                <option key={index} value={gov.passport}>
+                                                    {formatGovernor(gov)}
                                                 </option>
                                             ))}
                                         </select>
+
                                     ) : (
                                         <div className="no-data-state">No existing governors found</div>
                                     )}

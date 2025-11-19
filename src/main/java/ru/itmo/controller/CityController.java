@@ -78,6 +78,9 @@ public class CityController {
             @RequestParam(value = "carCodeFilter", defaultValue = "") String carCodeFilter,
             @RequestParam(value = "governmentFilter", defaultValue = "") String governmentFilter,
             @RequestParam(value = "governorFilter", defaultValue = "") String governorFilter,
+            @RequestParam(value = "passportFilter" , defaultValue = "") String governorPassportFilter,
+            @RequestParam(value = "postalCodeFilter", defaultValue = "") String postalCodeFilter,
+            @RequestParam(value = "oktmoFilter", defaultValue = "") String oktmoFilter,
             @RequestParam(value = "sortBy", defaultValue = "id") String sortBy,
             @RequestParam(value = "sortDirection", defaultValue = "asc") String sortDirection) {
         try {
@@ -102,6 +105,9 @@ public class CityController {
             filters.put("carCode", carCodeFilter);
             filters.put("government", governmentFilter);
             filters.put("governor", governorFilter);
+            filters.put("passport", governorPassportFilter);
+            filters.put("postalCode", postalCodeFilter);
+            filters.put("oktmo", oktmoFilter);
             List<City> filteredCities = cityService.getCitiesWithFiltersAndSort(filters, sortBy, sortDirection);
             int totalCities = filteredCities.size();
             int totalPages = (int) Math.ceil((double) totalCities / size);

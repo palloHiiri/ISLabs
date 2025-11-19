@@ -10,7 +10,11 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class Human {
+    private Long id;
+
     private String name;
+
+    private Long passport;
 
     public Human() {
 

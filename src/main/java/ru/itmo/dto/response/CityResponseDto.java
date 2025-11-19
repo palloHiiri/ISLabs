@@ -52,6 +52,16 @@ public class CityResponseDto {
     @NotNull(message = "Governor is required")
     private HumanResponseDto governor;
 
+    @Min(value = 10000000, message = "OKTMO must be at least 8 digits")
+    @Max(value = 99999999, message = "OKTMO must be at most 8 digits")
+    private Long oktmo;
+
+    @Min(value = 100000, message = "Postal code must be at least 6 digits")
+    @Max(value = 999999, message = "Postal code must be at most 6 digits")
+    private Long postalCode;
+
+    private HumanResponseDto passport;
+
     public CityResponseDto() {}
 
 

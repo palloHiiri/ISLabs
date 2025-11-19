@@ -222,9 +222,9 @@ class CityService {
     validateCityData(city) {
         const errors = [];
 
-        // if (!city.name || !city.name.trim()) {
-        //     errors.push('City name is required');
-        // }
+        if (!city.name || !city.name.trim()) {
+            errors.push('City name is required');
+        }
 
         if (!city.population || city.population <= 0) {
             errors.push('Population must be greater than 0');

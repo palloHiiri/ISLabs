@@ -1,5 +1,6 @@
 package ru.itmo.service;
 
+import lombok.AllArgsConstructor;
 import ru.itmo.mapper.CityMapper;
 import ru.itmo.model.City;
 import ru.itmo.model.Coordinates;
@@ -7,30 +8,44 @@ import ru.itmo.model.Human;
 import ru.itmo.dto.request.CityRequestDto;
 import ru.itmo.dto.response.CityResponseDto;
 import ru.itmo.repository.CityRepository;
+import ru.itmo.repository.HumanRepository;
+import ru.itmo.validator.CityValidator;
 import ru.itmo.websocket.CityWebSocketHandler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import lombok.*;
+
 
 import java.util.List;
 import java.util.Map;
 
+@AllArgsConstructor
 @Service
 public class CityService {
     private final CityRepository cityRepository;
     private final CityWebSocketHandler webSocketHandler;
     private final CityMapper cityMapper;
+    private final CityValidator cityValidator;
+    private final HumanRepository humanRepository;
+    private final HumanService humanService;
 
-    public CityService(CityRepository cityRepository, CityWebSocketHandler webSocketHandler, CityMapper cityMapper) {
-        this.cityMapper = cityMapper;
-        this.webSocketHandler = webSocketHandler;
-        this.cityRepository = cityRepository;
 
-    }
 
     @Transactional
     public Long addCity(City city) {
+        cityValidator.validateUniqueness(city, null);
         if (city.getCreationDate() == null) {
             city.setCreationDate(java.time.LocalDate.now());
+        }
+        if (city.getGovernor() != null && city.getGovernor().getId() == null) {
+            boolean exists = humanService.existsByPassport(city.getGovernor().getPassport());
+            if (!exists) {
+                Long governorId = humanService.addHuman(city.getGovernor());
+                city.getGovernor().setId(governorId);
+            } else {
+                Human existingGovernor = humanRepository.findByPassport(city.getGovernor().getPassport());
+                city.setGovernor(existingGovernor);
+            }
         }
         Long id = cityRepository.save(city);
         webSocketHandler.broadcastUpdate("CITY_ADDED", city);
@@ -44,8 +59,24 @@ public class CityService {
 
     @Transactional
     public void updateCity(City city) {
-        webSocketHandler.broadcastUpdate("CITY_UPDATED", city);
+        cityValidator.validateUniqueness(city, city.getId());
+
+        if (city.getGovernor() != null) {
+            Long passport = city.getGovernor().getPassport();
+            Human existingGovernor = humanRepository.findByPassport(passport);
+
+            if (existingGovernor != null) {
+                existingGovernor.setName(city.getGovernor().getName());
+                humanRepository.update(existingGovernor);
+                city.setGovernor(existingGovernor);
+            } else {
+                Long governorId = humanRepository.save(city.getGovernor());
+                city.getGovernor().setId(governorId);
+            }
+        }
+
         cityRepository.update(city);
+        webSocketHandler.broadcastUpdate("CITY_UPDATED", city);
     }
 
     @Transactional(readOnly = true)

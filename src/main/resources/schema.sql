@@ -1,3 +1,10 @@
+
+CREATE TABLE humans (
+                        id BIGSERIAL PRIMARY KEY,
+                        name VARCHAR(100) NOT NULL CHECK (name <> ''),
+                        passport BIGINT NOT NULL UNIQUE CHECK (passport >= 1000000000 AND passport <= 9999999999)
+);
+
 CREATE TABLE cities (
     id BIGSERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL CHECK (name <> ''),
@@ -12,5 +19,9 @@ CREATE TABLE cities (
     timezone INTEGER NOT NULL CHECK (timezone > -13 AND timezone <= 15),
     car_code INTEGER CHECK (car_code > 0 AND car_code <= 1000),
     government VARCHAR(50) NOT NULL,
-    governor_name VARCHAR(100) NOT NULL CHECK (governor_name <> '')
+    postal_code INTEGER,
+    oktmo INTEGER,
+    governor_id BIGINT NOT NULL REFERENCES humans(id)
 );
+
+

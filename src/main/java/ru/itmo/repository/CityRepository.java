@@ -30,11 +30,6 @@ public class CityRepository {
         session.delete(city);
     }
 
-    public List<Human> findAllGovernors() {
-        Session session = sessionFactory.getCurrentSession();
-        return session.createQuery("SELECT DISTINCT c.governor FROM City c WHERE c.governor IS NOT NULL", Human.class).list();
-    }
-
     public List<Coordinates> findAllCoordinates() {
         Session session = sessionFactory.getCurrentSession();
         return session.createQuery("SELECT DISTINCT c.coordinates FROM City c WHERE c.coordinates IS NOT NULL", Coordinates.class).list();
@@ -47,7 +42,7 @@ public class CityRepository {
 
     public void update(City city) {
         Session session = sessionFactory.getCurrentSession();
-        session.update(city);
+        session.merge(city);
     }
 
     public Double getSumOfTimezones() {
@@ -132,7 +127,8 @@ public class CityRepository {
 
     public List<City> findWithFiltersAndSort(Map<String, String> filters, String sortBy, String sortDirection) {
         Session session = sessionFactory.getCurrentSession();
-        StringBuilder hql = new StringBuilder("FROM City c WHERE 1=1");
+        StringBuilder hql = new StringBuilder("FROM City c LEFT JOIN FETCH c.governor g WHERE 1=1");
+
         Map<String, Object> params = new HashMap<>();
 
         if (filters.get("id") != null && !filters.get("id").trim().isEmpty()) {
@@ -204,10 +200,25 @@ public class CityRepository {
             params.put("government", "%" + filters.get("government").trim().toLowerCase() + "%");
         }
 
-        if (filters.get("governor") != null && !filters.get("governor").trim().isEmpty()) {
-            hql.append(" AND LOWER(c.governor.name) LIKE :governor");
-            params.put("governor", "%" + filters.get("governor").trim().toLowerCase() + "%");
+        if (filters.get("governor") != null && !filters.get("governor").isEmpty()) {
+            hql.append(" AND LOWER(g.name) LIKE LOWER(:governor)");
+            params.put("governor", "%" + filters.get("governor") + "%");
         }
+        if (filters.get("passport") != null && !filters.get("passport").isEmpty()) {
+            hql.append(" AND CAST(g.passport AS string) LIKE :passport");
+            params.put("passport", "%" + filters.get("passport") + "%");
+        }
+
+        if (filters.get("postalCode") != null && !filters.get("postalCode").trim().isEmpty()) {
+            hql.append(" AND CAST(c.postalCode AS string) LIKE :postalCode");
+            params.put("postalCode", "%" + filters.get("postalCode").trim() + "%");
+        }
+
+        if (filters.get("oktmo") != null && !filters.get("oktmo").trim().isEmpty()) {
+            hql.append(" AND CAST(c.oktmo AS string) LIKE :oktmo");
+            params.put("oktmo", "%" + filters.get("oktmo").trim() + "%");
+        }
+
 
         hql.append(" ORDER BY ");
         switch (sortBy.toLowerCase()) {
@@ -256,6 +267,15 @@ public class CityRepository {
             case "governor":
                 hql.append("c.governor.name");
                 break;
+            case "postalcode":
+                hql.append("c.postalCode");
+                break;
+            case "oktmo":
+                hql.append("c.oktmo");
+                break;
+            case "governorPassport":
+                hql.append("c.governor.passport");
+                break;
             default:
                 hql.append("c.id");
                 break;
@@ -273,5 +293,41 @@ public class CityRepository {
         }
 
         return query.list();
+    }
+
+    public boolean existsByGovernorPassport(Long passport) {
+        Session session = sessionFactory.getCurrentSession();
+        Query<Long> query = session.createQuery("SELECT COUNT(c) FROM City c WHERE c.governor.passport = :passport", Long.class);
+        query.setParameter("passport", passport);
+        return query.uniqueResult() > 0;
+    }
+
+    public boolean existsByPostalCode(Long postalCode) {
+        Session session = sessionFactory.getCurrentSession();
+        Query<Long> query = session.createQuery("SELECT COUNT(c) FROM City c WHERE c.postalCode = :postalCode", Long.class);
+        query.setParameter("postalCode", postalCode);
+        return query.uniqueResult() > 0;
+    }
+
+    public boolean existsByOktmo(Long oktmo) {
+        Session session = sessionFactory.getCurrentSession();
+        Query<Long> query = session.createQuery("SELECT COUNT(c) FROM City c WHERE c.oktmo = :oktmo", Long.class);
+        query.setParameter("oktmo", oktmo);
+        return query.uniqueResult() > 0;
+    }
+
+    public City findCityByGovernorPassport(Long passport) {
+        Session session = sessionFactory.getCurrentSession();
+        Query<City> query = session.createQuery("FROM City c WHERE c.governor.passport = :passport", City.class);
+        query.setParameter("passport", passport);
+        return query.uniqueResult();
+    }
+
+    public List<Human> findAllGovernors() {
+        Session session = sessionFactory.getCurrentSession();
+        return session.createQuery(
+                "SELECT DISTINCT c.governor FROM City c WHERE c.governor IS NOT NULL",
+                Human.class
+        ).list();
     }
 }

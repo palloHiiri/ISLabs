@@ -3,7 +3,7 @@
         "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
         "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 
-<hibernate-mapping package="com.example.model">
+<hibernate-mapping package="ru.itmo.model">
     <class name="ru.itmo.model.City" table="cities">
         <id name="id" type="java.lang.Long">
             <column name="id"/>
@@ -54,6 +54,12 @@
         <property name="carCode" type="java.lang.Integer">
             <column name="car_code" not-null="false"/>
         </property>
+        <property name="oktmo" type="java.lang.Long">
+            <column name="oktmo" not-null="false"/>
+        </property>
+        <property name="postalCode" type="java.lang.Long">
+            <column name="postalCode" not-null="false"/>
+        </property>
 
         <property name="government">
             <column name="government" not-null="true"/>
@@ -63,10 +69,6 @@
             </type>
         </property>
 
-        <component name="governor" class="ru.itmo.model.Human">
-            <property name="name" type="java.lang.String">
-                <column name="governor_name"/>
-            </property>
-        </component>
+        <many-to-one name="governor" class="ru.itmo.model.Human" column="governor_id" not-null="true" cascade="save-update"/>
     </class>
 </hibernate-mapping>

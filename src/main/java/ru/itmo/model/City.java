@@ -35,6 +35,12 @@ public class City {
 
     private Human governor;
 
+    private Human passport;
+
+    private Long oktmo;
+
+    private Long postalCode;
+
     public City() {}
 
 

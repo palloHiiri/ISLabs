@@ -211,6 +211,26 @@ const CityTable = ({
                             onClearFilter={onClearFilter}
                         />
                         <TableHeader
+                            field="postalCode"
+                            label="Postal Code"
+                            filters={filters}
+                            sortBy={sortBy}
+                            sortDirection={sortDirection}
+                            onSortChange={onSortChange}
+                            onFilterChange={onFilterChange}
+                            onClearFilter={onClearFilter}
+                        />
+                        <TableHeader
+                            field="oktmo"
+                            label="OKTMO"
+                            filters={filters}
+                            sortBy={sortBy}
+                            sortDirection={sortDirection}
+                            onSortChange={onSortChange}
+                            onFilterChange={onFilterChange}
+                            onClearFilter={onClearFilter}
+                        />
+                        <TableHeader
                             field="government"
                             label="Government"
                             filters={filters}
@@ -223,6 +243,16 @@ const CityTable = ({
                         <TableHeader
                             field="governor"
                             label="Governor"
+                            filters={filters}
+                            sortBy={sortBy}
+                            sortDirection={sortDirection}
+                            onSortChange={onSortChange}
+                            onFilterChange={onFilterChange}
+                            onClearFilter={onClearFilter}
+                        />
+                        <TableHeader
+                            field="passport"
+                            label="Passport"
                             filters={filters}
                             sortBy={sortBy}
                             sortDirection={sortDirection}
@@ -256,8 +286,11 @@ const CityTable = ({
                             <td className="table-cell number-cell">{city.metersAboveSeaLevel || 'N/A'}</td>
                             <td className="table-cell number-cell">{city.timezone}</td>
                             <td className="table-cell number-cell">{city.carCode || 'N/A'}</td>
+                            <td className="table-cell text-cell">{city.postalCode || 'N/A'}</td>
+                            <td className="table-cell text-cell">{city.oktmo || 'N/A'}</td>
                             <td className="table-cell text-cell">{city.government}</td>
                             <td className="table-cell text-cell">{city.governor?.name || 'N/A'}</td>
+                            <td className="table-cell text-cell">{city.governor?.passport || 'N/A'}</td>
                             <td className="table-cell actions-cell">
                                 <div className="action-buttons">
                                     <button
