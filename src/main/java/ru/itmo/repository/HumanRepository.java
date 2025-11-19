@@ -27,9 +27,9 @@ public class HumanRepository {
     }
 
 
-    public Human save(Human human) {
+    public Long save(Human human) {
         Session session = sessionFactory.getCurrentSession();
-        return session.merge(human);
+        return (Long) session.save(human);
     }
 
     public void update(Human human) {

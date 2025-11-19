@@ -25,7 +25,7 @@ public class HumanService {
     }
 
     @Transactional
-    public Human addHuman(Human human) {
+    public Long addHuman(Human human) {
         return humanRepository.save(human);
     }
 

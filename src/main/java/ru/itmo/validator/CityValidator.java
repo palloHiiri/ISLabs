@@ -14,15 +14,19 @@ public class CityValidator {
     }
 
     public void validateUniqueness(City city, Long excludeId) {
-
+//        if (city.getGovernor() != null && city.getGovernor().getPassport() != null) {
+//            if (cityRepository.existsByGovernorPassport(city.getGovernor().getPassport())) {
+//                if (excludeId == null || !cityRepository.findById(excludeId).getGovernor().getPassport().equals(city.getGovernor().getPassport())) {
+//                    throw new IllegalArgumentException("Governor passport must be unique");
+//                }
+//            }
+//        }
         if (city.getGovernor() != null && city.getGovernor().getPassport() != null) {
-            if (cityRepository.existsByGovernorPassportExceptId(city.getGovernor().getPassport(), excludeId)) {
-                throw new IllegalArgumentException("Governor passport must be unique");
+            City existingCity = cityRepository.findCityByGovernorPassport(city.getGovernor().getPassport());
+            if (existingCity != null && (excludeId == null || !existingCity.getId().equals(excludeId)) && !existingCity.getGovernor().getName().equals(city.getGovernor().getName())) {
+                throw new IllegalArgumentException("Governor passport already exists with a different name");
             }
         }
-
-        City existing = excludeId != null ? cityRepository.findById(excludeId) : null;
-
         if (city.getPostalCode() != null) {
             if (cityRepository.existsByPostalCode(city.getPostalCode())) {
                 if (excludeId == null || !cityRepository.findById(excludeId).getPostalCode().equals(city.getPostalCode())) {

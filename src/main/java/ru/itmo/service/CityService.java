@@ -40,14 +40,14 @@ public class CityService {
         if (city.getGovernor() != null && city.getGovernor().getId() == null) {
             boolean exists = humanService.existsByPassport(city.getGovernor().getPassport());
             if (!exists) {
-                Long governorId = humanService.addHuman(city.getGovernor()).getId();
+                Long governorId = humanService.addHuman(city.getGovernor());
                 city.getGovernor().setId(governorId);
             } else {
                 Human existingGovernor = humanRepository.findByPassport(city.getGovernor().getPassport());
                 city.setGovernor(existingGovernor);
             }
         }
-        Long id = cityRepository.save(city).getId();
+        Long id = cityRepository.save(city);
         webSocketHandler.broadcastUpdate("CITY_ADDED", city);
         return id;
     }
@@ -67,14 +67,15 @@ public class CityService {
 
             if (existingGovernor != null) {
                 existingGovernor.setName(city.getGovernor().getName());
-//                humanRepository.update(existingGovernor);
+                humanRepository.update(existingGovernor);
                 city.setGovernor(existingGovernor);
             } else {
-                city.setGovernor(humanRepository.save(city.getGovernor()));
+                Long governorId = humanRepository.save(city.getGovernor());
+                city.getGovernor().setId(governorId);
             }
         }
 
-        cityRepository.save(city);
+        cityRepository.update(city);
         webSocketHandler.broadcastUpdate("CITY_UPDATED", city);
     }
 

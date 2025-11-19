@@ -69,6 +69,6 @@
             </type>
         </property>
 
-        <many-to-one name="governor" class="ru.itmo.model.Human" column="governor_id" not-null="true" cascade="merge"/>
+        <many-to-one name="governor" class="ru.itmo.model.Human" column="governor_id" not-null="true" cascade="save-update"/>
     </class>
 </hibernate-mapping>
