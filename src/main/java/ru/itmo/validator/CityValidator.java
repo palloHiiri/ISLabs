@@ -14,13 +14,6 @@ public class CityValidator {
     }
 
     public void validateUniqueness(City city, Long excludeId) {
-//        if (city.getGovernor() != null && city.getGovernor().getPassport() != null) {
-//            if (cityRepository.existsByGovernorPassport(city.getGovernor().getPassport())) {
-//                if (excludeId == null || !cityRepository.findById(excludeId).getGovernor().getPassport().equals(city.getGovernor().getPassport())) {
-//                    throw new IllegalArgumentException("Governor passport must be unique");
-//                }
-//            }
-//        }
         if (city.getGovernor() != null && city.getGovernor().getPassport() != null) {
             City existingCity = cityRepository.findCityByGovernorPassport(city.getGovernor().getPassport());
             if (existingCity != null && (excludeId == null || !existingCity.getId().equals(excludeId)) && !existingCity.getGovernor().getName().equals(city.getGovernor().getName())) {

@@ -7,7 +7,6 @@
     box-sizing: border-box;
 }
 
-/* Хедер — карточка с верхней цветной полосой */
 .header {
     margin-bottom: 32px;
     background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
@@ -41,7 +40,6 @@
     text-align: center;
 }
 
-/* Состояния загрузки/ошибки */
 .loading {
     padding: 16px 20px;
     color: #334155;
@@ -58,7 +56,6 @@
     font-weight: 600;
 }
 
-/* Контейнер таблицы — как у таблицы в списке городов */
 .city-table-container {
     display: block;
 }
@@ -75,7 +72,6 @@
     overflow: auto;
 }
 
-/* Таблица */
 .city-table {
     width: 100%;
     border-collapse: separate;
@@ -123,7 +119,6 @@
     white-space: nowrap;
 }
 
-/* Бейджи статусов */
 .status-badge {
     display: inline-block;
     padding: 6px 10px;
@@ -152,7 +147,6 @@
     border-color: rgba(59, 130, 246, 0.4);
 }
 
-/* Адаптив */
 @media (max-width: 640px) {
     .header {
         padding: 20px;

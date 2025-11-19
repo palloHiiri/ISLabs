@@ -6,32 +6,14 @@
     "population": 12678000,
     "timezone": 3,
     "carCode": 77,
-    "postalCode": "101000",
-    "oktmo": "45382000",
+    "postalCode": "102220",
+    "oktmo": "45382222",
     "establishmentDate": "1147-04-04",
     "capital": true,
     "government": "PATRIARCHY",
     "metersAboveSeaLevel": 156,
     "governor": {
-      "passport": 5554443332,
-      "name": "Ildar Safin"
-    }
-  },
-  {
-    "name": "Kazan",
-    "coordinates": { "x": 49.1064, "y": 55.7963 },
-    "area": 615.0,
-    "population": 1250000,
-    "timezone": 3,
-    "carCode": 16,
-    "postalCode": "420000",
-    "oktmo": "92701000",
-    "establishmentDate": "1005-06-01",
-    "capital": false,
-    "government": "PATRIARCHY",
-    "metersAboveSeaLevel": 60,
-    "governor": {
-      "passport": 5554443332,
+      "passport": 5554443322,
       "name": "Ildar Safin"
     }
   }

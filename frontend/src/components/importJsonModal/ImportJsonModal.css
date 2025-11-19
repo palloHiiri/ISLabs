@@ -1,4 +1,4 @@
-/* Оверлей */
+
 .modal-overlay {
     position: fixed;
     inset: 0;
@@ -13,7 +13,6 @@
     box-sizing: border-box;
 }
 
-/* Карточка модального окна */
 .modal {
     background: #ffffff;
     border-radius: 12px;
@@ -26,7 +25,6 @@
     flex-direction: column;
 }
 
-/* Заголовок */
 .modal h3 {
     margin: 0;
     padding: 20px 24px;
@@ -37,7 +35,6 @@
     color: #1e293b;
 }
 
-/* Поле выбора файла */
 .modal > input[type="file"] {
     margin: 24px;
     padding: 12px;
@@ -54,7 +51,6 @@
     cursor: not-allowed;
 }
 
-/* Текст ошибки */
 .error-text {
     margin: 0 24px;
     margin-top: 8px;
@@ -62,7 +58,6 @@
     font-size: 0.9rem;
 }
 
-/* Футер с кнопками */
 .modal-actions {
     padding: 16px 24px;
     background-color: #f8fafc;
@@ -82,7 +77,6 @@
     font-size: 0.9rem;
 }
 
-/* Первая кнопка (Отмена) — серая */
 .modal-actions button:first-child {
     background-color: #64748b;
     color: #ffffff;
@@ -92,7 +86,6 @@
     background-color: #475569;
 }
 
-/* Вторая кнопка (Импорт) — синяя, основная */
 .modal-actions button:last-child {
     background-color: #3b82f6;
     color: #ffffff;
@@ -107,7 +100,6 @@
     cursor: not-allowed;
 }
 
-/* Мобилки */
 @media (max-width: 640px) {
     .modal {
         max-width: 100%;

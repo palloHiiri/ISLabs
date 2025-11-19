@@ -1,4 +1,3 @@
-// javascript
 import React, { useEffect, useState } from 'react';
 import { cityService } from '../../services/cityService.js';
 import './ImportHistory.css';
@@ -18,9 +17,6 @@ const ImportHistory = () => {
         try {
             const resp = await cityService.getImportHistory(page, size);
 
-            // Поддержка разных форм ответа:
-            // 1) массив -> считаем как одиночная страница
-            // 2) объект { items|content, totalPages|totalElements|total }
             if (Array.isArray(resp)) {
                 setItems(resp);
                 setTotalPages(1);
@@ -50,7 +46,6 @@ const ImportHistory = () => {
 
     useEffect(() => {
         loadPage(currentPage, pageSize);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentPage, pageSize]);
 
     const renderStatus = (status) => {
@@ -90,7 +85,6 @@ const ImportHistory = () => {
         if (page < 0) page = 0;
         if (page >= totalPages) page = totalPages - 1;
         setCurrentPage(page);
-        // loadPage будет вызван эффектом
     };
 
     return (

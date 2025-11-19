@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Setter
 public class ImportOperation {
     private Long id;
-    private String status; // SUCCESS, PARTIAL, FAILED, RUNNING
+    private String status;
     private Integer addedCount;
     private String message;
     private LocalDateTime timestamp;

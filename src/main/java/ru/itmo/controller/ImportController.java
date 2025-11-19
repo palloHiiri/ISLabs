@@ -1,5 +1,3 @@
-// java
-// File: src/main/java/ru/itmo/controller/ImportController.java
 package ru.itmo.controller;
 
 import org.springframework.http.ResponseEntity;

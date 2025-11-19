@@ -90,12 +90,11 @@ public class ImportService {
     @Transactional(readOnly = true)
     public java.util.Map<String, Object> getImportHistory(int page, int size) {
         if (page < 0) page = 0;
-        if (size <= 0) size = 10; // приводим к default, согласованному с контроллером / фронтом
+        if (size <= 0) size = 10;
 
         long total = importRepo.countAll();
         int totalPages = (int) Math.max(1, Math.ceil((double) total / size));
 
-        // если запрошена страница вне диапазона — вернуть последнюю существующую
         if (page >= totalPages) page = Math.max(0, totalPages - 1);
 
         List<ImportOperation> items = importRepo.findPaged(page, size);
