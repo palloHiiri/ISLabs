@@ -15,6 +15,7 @@ dependencies {
     implementation 'org.springframework:spring-webmvc:6.2.10'
     implementation 'org.springframework:spring-context:6.2.10'
     implementation 'org.springframework:spring-orm:6.2.10'
+    implementation 'org.springframework:spring-web:6.2.10'
 
     implementation 'org.hibernate:hibernate-core:6.5.2.Final'
     implementation 'org.hibernate.validator:hibernate-validator:8.0.1.Final'
@@ -40,4 +41,8 @@ dependencies {
 
     implementation 'org.mapstruct:mapstruct:1.5.5.Final'
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+
+    implementation 'commons-fileupload:commons-fileupload:1.5'
+    implementation 'commons-io:commons-io:2.11.0'
+
 }

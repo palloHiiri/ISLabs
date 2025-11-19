@@ -184,7 +184,7 @@ const SpecialFunctions = () => {
 
                     <FunctionCard
                         title="Cities by Timezone"
-                        description="Find cities with timezone greater than specified value"
+                        description="Find cities with timezone less than specified value"
                         onExecute={() => executeFunction('citiesWithTimezoneLess', timezoneInput)}
                         isLoading={loadingFunctions.citiesWithTimezoneLess}
                         result={results.citiesWithTimezoneLess}

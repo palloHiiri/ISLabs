@@ -61,7 +61,10 @@ public class CityRepository {
 
     public List<City> getCitiesWithTimezoneLessThan(Integer timezone) {
         Session session = sessionFactory.getCurrentSession();
-        Query<City> query = session.createQuery("from City c where c.timezone > :timezone", City.class);
+        Query<City> query = session.createQuery(
+                "select distinct c from City c left join fetch c.governor g where c.timezone > :timezone",
+                City.class
+        );
         query.setParameter("timezone", timezone);
         return query.list();
     }

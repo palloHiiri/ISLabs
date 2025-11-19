@@ -17,5 +17,6 @@
 
         <mapping resource="City.hbm.xml"/>
         <mapping resource="Human.hbm.xml"/>
+        <mapping resource="ImportOperation.hbm.xml"/>
     </session-factory>
 </hibernate-configuration>

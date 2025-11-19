@@ -16,16 +16,6 @@ public class HumanRepository {
         this.sessionFactory = sessionFactory;
     }
 
-    public Human findById(Long id) {
-        Session session = sessionFactory.getCurrentSession();
-        return session.get(Human.class, id);
-    }
-
-    public List<Human> findAll() {
-        Session session = sessionFactory.getCurrentSession();
-        return session.createQuery("FROM Human", Human.class).list();
-    }
-
 
     public Long save(Human human) {
         Session session = sessionFactory.getCurrentSession();

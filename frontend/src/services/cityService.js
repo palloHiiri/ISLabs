@@ -183,7 +183,7 @@ class CityService {
             }
             return await this.request(`/timezone-less-than/${timezone}`);
         } catch (error) {
-            throw new Error(`Failed to fetch cities by timezone`);
+            throw new Error(`Failed to fetch cities by timezone: ${error.message}`);
         }
     }
 
@@ -271,6 +271,54 @@ class CityService {
         }
 
     }
-}
 
-export const cityService = new CityService();
+    async importCities(file) {
+        try {
+            if (!file) throw new Error('File is required for import');
+
+            const url = `${API_BASE}/import`;
+            const form = new FormData();
+            form.append('file', file);
+
+            const response = await fetch(url, {
+                method: 'POST',
+                body: form
+            });
+
+            if (response.status === 204) return { success: true };
+
+            const contentType = response.headers.get('content-type');
+            let data;
+            if (contentType && contentType.includes('application/json')) {
+                data = await response.json();
+            } else {
+                const text = await response.text();
+                throw new Error(text || `HTTP ${response.status}`);
+            }
+
+            if (!response.ok) {
+                if (data && data.message) throw new Error(data.message);
+                throw new Error(`Import failed: HTTP ${response.status}`);
+            }
+
+            return data;
+        } catch (error) {
+            if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                throw new Error('Network error. Please check your connection.');
+            }
+            throw error;
+        }
+    }
+
+    async getImportHistory(page = 0, size = 10) {
+        try {
+            return await this.request(`/imports?page=${page}&size=${size}`);
+        } catch (error) {
+            throw new Error(`Failed to fetch import history: ${error.message || error}`);
+        }
+    }
+
+}
+ const cityService = new CityService();
+export default cityService;
+export { cityService };

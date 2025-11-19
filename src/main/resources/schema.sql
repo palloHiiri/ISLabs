@@ -1,3 +1,11 @@
+-- sql
+CREATE TABLE import_operations (
+                                   id BIGSERIAL PRIMARY KEY,
+                                   status VARCHAR(20) NOT NULL,
+                                   added_count INTEGER,
+                                   message TEXT,
+                                   created_at TIMESTAMP NOT NULL DEFAULT now()
+);
 
 CREATE TABLE humans (
                         id BIGSERIAL PRIMARY KEY,

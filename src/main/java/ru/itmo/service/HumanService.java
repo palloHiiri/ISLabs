@@ -13,17 +13,6 @@ import java.util.List;
 public class HumanService {
     private final HumanRepository humanRepository;
 
-
-    @Transactional(readOnly = true)
-    public List<Human> getAllHumans() {
-        return humanRepository.findAll();
-    }
-
-    @Transactional(readOnly = true)
-    public Human getHumanById(Long id) {
-        return humanRepository.findById(id);
-    }
-
     @Transactional
     public Long addHuman(Human human) {
         return humanRepository.save(human);

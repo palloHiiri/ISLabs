@@ -6,6 +6,7 @@ import CityTableWithPagination from "../сityTableWithPagination/CityTableWithPa
 import { useNotification } from '../errorNotification/errorNotification.jsx';
 import CitySearchModal from "../сitySearchModal/сitySearchModal.jsx";
 import './CityList.css';
+import ImportJsonModal from "../importJsonModal/ImportJsonModal.jsx";
 
 const CityList = () => {
     const navigate = useNavigate();
@@ -40,6 +41,14 @@ const CityList = () => {
     const [itemsPerPage] = useState(5);
     const ws = useRef(null);
     const filterTimeoutRef = useRef(null);
+    const [showImportModal, setShowImportModal] = useState(false);
+
+    const handleOpenImport = () => setShowImportModal(true);
+    const handleCloseImport = () => setShowImportModal(false);
+    const handleImported = (result) => {
+        fetchCities(true);
+    };
+
 
     const goToSpecialFunctions = () => {
         navigate('/special-functions');
@@ -255,6 +264,21 @@ const CityList = () => {
                             </div>
                         </div>
 
+                        <button
+                            onClick={handleOpenImport}
+                            className="btn btn-secondary"
+                            disabled={showForm}
+                        >
+                            Импорт JSON
+                        </button>
+
+                        <button
+                            onClick={() => navigate('/import-history')}
+                            className="btn btn-secondary"
+                        >
+                            История импортов
+                        </button>
+
                         <div className="controls-right">
                             {hasActiveFilters && (
                                 <div className="filter-indicator">
@@ -321,7 +345,13 @@ const CityList = () => {
                     onClose={closeSearchModal}
                     onEdit={handleEditCity}
                 />
+                <ImportJsonModal
+                    isOpen={showImportModal}
+                    onClose={handleCloseImport}
+                    onImported={handleImported}
+                />
             </div>
+
         </>
     );
 };
