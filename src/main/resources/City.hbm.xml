@@ -4,7 +4,7 @@
         "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping package="com.example.model">
-    <class name="City" table="cities">
+    <class name="ru.itmo.model.City" table="cities">
         <id name="id" type="java.lang.Long">
             <column name="id"/>
             <generator class="identity"/>
@@ -14,7 +14,7 @@
             <column name="name" length="100" not-null="true"/>
         </property>
 
-        <component name="coordinates" class="Coordinates">
+        <component name="coordinates" class="ru.itmo.model.Coordinates">
             <property name="x" type="java.lang.Long">
                 <column name="x" not-null="true"/>
             </property>
@@ -58,12 +58,12 @@
         <property name="government">
             <column name="government" not-null="true"/>
             <type name="org.hibernate.type.EnumType">
-                <param name="enumClass">com.example.model.Government</param>
+                <param name="enumClass">ru.itmo.model.Government</param>
                 <param name="useNamed">true</param>
             </type>
         </property>
 
-        <component name="governor" class="Human">
+        <component name="governor" class="ru.itmo.model.Human">
             <property name="name" type="java.lang.String">
                 <column name="governor_name"/>
             </property>

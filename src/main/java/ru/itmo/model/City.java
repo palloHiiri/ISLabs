@@ -1,9 +1,7 @@
-package com.example.model;
+package ru.itmo.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.annotations.*;
+import jakarta.validation.constraints.*;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -15,7 +13,6 @@ public class City {
     private Long id;
 
     private String name;
-
     private Coordinates coordinates;
 
     private LocalDate creationDate;

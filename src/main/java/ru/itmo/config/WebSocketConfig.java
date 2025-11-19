@@ -1,6 +1,6 @@
-package com.example.config;
+package ru.itmo.config;
 
-import com.example.websocket.CityWebSocketHandler;
+import ru.itmo.websocket.CityWebSocketHandler;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;

@@ -1,4 +1,4 @@
-package com.example.config;
+package ru.itmo.config;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.Metadata;
@@ -10,6 +10,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import ru.itmo.model.City;
+import ru.itmo.model.Coordinates;
+import ru.itmo.model.Government;
+import ru.itmo.model.Human;
 
 @Configuration
 @EnableTransactionManagement
@@ -23,10 +27,10 @@ public class HibernateConfig {
                     .build();
 
             Metadata metadata = new MetadataSources(standardRegistry)
-                    .addAnnotatedClass(com.example.model.City.class)
-                    .addAnnotatedClass(com.example.model.Coordinates.class)
-                    .addAnnotatedClass(com.example.model.Government.class)
-                    .addAnnotatedClass(com.example.model.Human.class)
+                    .addAnnotatedClass(City.class)
+                    .addAnnotatedClass(Coordinates.class)
+                    .addAnnotatedClass(Government.class)
+                    .addAnnotatedClass(Human.class)
                     .getMetadataBuilder()
                     .build();
 

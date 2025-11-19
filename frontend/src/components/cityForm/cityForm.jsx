@@ -4,8 +4,8 @@ import { useNotification } from '../errorNotification/errorNotification.jsx';
 import './CityForm.css';
 
 const CityForm = ({ city, onSave, onCancel }) => {
-    const { showError, showSuccess } = useNotification();
-
+    const { showError, showSuccess, NotificationComponent } = useNotification();
+    const [serverDown, setServerDown] = useState(false);
     const [activeTab, setActiveTab] = useState('basic');
     const [formData, setFormData] = useState({
         name: '',
@@ -65,9 +65,11 @@ const CityForm = ({ city, onSave, onCancel }) => {
                 timezones,
                 carCodes
             });
+            setServerDown(false);
         } catch (error) {
             console.error('Error loading existing data:', error);
             showError('Failed to load existing data');
+            setServerDown(true);
         } finally {
             setIsLoadingExistingData(false);
         }
@@ -163,7 +165,7 @@ const CityForm = ({ city, onSave, onCancel }) => {
     const validateForm = () => {
         const newErrors = {};
 
-        if (!formData.name?.trim()) newErrors.name = 'Name is required';
+        // if (!formData.name?.trim()) newErrors.name = 'Name is required';
         if (!formData.population || formData.population <= 0) newErrors.population = 'Population must be > 0';
         if (!formData.area || formData.area <= 0) newErrors.area = 'Area must be > 0';
         if (formData.timezone < -13 || formData.timezone > 15) newErrors.timezone = 'Timezone must be between -13 and 15';
@@ -172,6 +174,15 @@ const CityForm = ({ city, onSave, onCancel }) => {
         if (formData.coordinates.y <= -243) newErrors.coordY = 'Y must be > -243';
         if (formData.carCode !== null && (formData.carCode <= 0 || formData.carCode > 1000)) {
             newErrors.carCode = 'Car code must be between 1 and 1000';
+        }
+        if (formData.establishmentDate) {
+            const picked = new Date(formData.establishmentDate);
+            const today = new Date();
+            picked.setHours(0,0,0,0);
+            today.setHours(0,0,0,0);
+            if (picked > today) {
+                newErrors.establishmentDate = 'Establishment date cannot be in the future';
+            }
         }
 
         setErrors(newErrors);
@@ -192,9 +203,17 @@ const CityForm = ({ city, onSave, onCancel }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log('handleSubmit called');
         if (!validateForm()) return;
 
+        if(serverDown){
+            console.log('serverDown true, showing error');
+            showError('Server is currently unreachable. Please try again later.');
+            return;
+        }
+
         setIsLoading(true);
+        console.log('Starting submit...');
         try {
             const submitData = {
                 ...formData,
@@ -219,7 +238,13 @@ const CityForm = ({ city, onSave, onCancel }) => {
             onSave();
         } catch (error) {
             console.error('Error saving city:', error);
-            showError(error.message || 'An unexpected error occurred');
+            console.log('Error message:', error.message);
+            if (error.message && error.message.includes('500')) {
+                setServerDown(true);
+                showError('Server is unavailable. Please try again later.');
+            } else {
+                showError(error.message || 'An unexpected error occurred');
+            }
         } finally {
             setIsLoading(false);
         }
@@ -429,7 +454,9 @@ const CityForm = ({ city, onSave, onCancel }) => {
                                         name="establishmentDate"
                                         value={formData.establishmentDate}
                                         onChange={handleChange}
+                                        className={getError('establishmentDate') ? 'border-red-500' : ''}
                                     />
+                                    {getError('establishmentDate') && <span className="text-red-500">{getError('establishmentDate')}</span>}
                                 </div>
                                 <div className="form-group">
                                     <label>Meters Above Sea Level</label>
@@ -525,6 +552,7 @@ const CityForm = ({ city, onSave, onCancel }) => {
                             )}
                         </div>
                     </div>
+                    <NotificationComponent />
                 </div>
 
                 <div className="city-form-modal-footer">
@@ -544,6 +572,7 @@ const CityForm = ({ city, onSave, onCancel }) => {
                     </button>
                 </div>
             </div>
+
         </div>
     );
 };

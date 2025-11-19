@@ -175,7 +175,7 @@ export const useNotification = () => {
         });
     };
 
-    const showError = (message, duration = 0, isModal = true) => { // 0 = no auto-close for errors
+    const showError = (message, duration = 0, isModal = true) => {
         showNotification(message, 'error', duration, isModal);
     };
 

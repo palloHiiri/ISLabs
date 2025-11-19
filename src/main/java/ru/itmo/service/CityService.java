@@ -1,10 +1,13 @@
-package com.example.service;
+package ru.itmo.service;
 
-import com.example.model.City;
-import com.example.model.Coordinates;
-import com.example.model.Human;
-import com.example.repository.CityRepository;
-import com.example.websocket.CityWebSocketHandler;
+import ru.itmo.mapper.CityMapper;
+import ru.itmo.model.City;
+import ru.itmo.model.Coordinates;
+import ru.itmo.model.Human;
+import ru.itmo.dto.request.CityRequestDto;
+import ru.itmo.dto.response.CityResponseDto;
+import ru.itmo.repository.CityRepository;
+import ru.itmo.websocket.CityWebSocketHandler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,8 +18,10 @@ import java.util.Map;
 public class CityService {
     private final CityRepository cityRepository;
     private final CityWebSocketHandler webSocketHandler;
+    private final CityMapper cityMapper;
 
-    public CityService(CityRepository cityRepository, CityWebSocketHandler webSocketHandler) {
+    public CityService(CityRepository cityRepository, CityWebSocketHandler webSocketHandler, CityMapper cityMapper) {
+        this.cityMapper = cityMapper;
         this.webSocketHandler = webSocketHandler;
         this.cityRepository = cityRepository;
 
@@ -87,5 +92,13 @@ public class CityService {
     @Transactional(readOnly = true)
     public List<City> getCitiesWithFiltersAndSort(Map<String, String> filters, String sortBy, String sortDirection) {
         return cityRepository.findWithFiltersAndSort(filters, sortBy, sortDirection);
+    }
+
+    public City mapRequestToEntity(CityRequestDto dto) {
+        return cityMapper.toEntity(dto);
+    }
+
+    public CityResponseDto mapEntityToResponse(City city) {
+        return cityMapper.toResponseDto(city);
     }
 }

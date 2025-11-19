@@ -1,16 +1,22 @@
-package com.example.controller;
+package ru.itmo.controller;
 
-import com.example.model.City;
-import com.example.model.Coordinates;
-import com.example.model.Human;
-import com.example.service.CityService;
+import ru.itmo.dto.request.CityRequestDto;
+import ru.itmo.dto.response.CityResponseDto;
+import jakarta.validation.Valid;
+import ru.itmo.dto.response.CityResponseDto;
+import ru.itmo.model.City;
+import ru.itmo.model.Coordinates;
+import ru.itmo.model.Human;
+import ru.itmo.service.CityService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/cities")
@@ -22,46 +28,12 @@ public class CityController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<?> addCity(@RequestBody City city) {
+    public ResponseEntity<?> addCity(@Valid @RequestBody CityRequestDto cityRequest) {
         try {
-            if (city.getName() == null || city.getName().trim().isEmpty()) {
-                return createErrorResponse("City name is required", HttpStatus.BAD_REQUEST);
-            }
-
-            if (city.getPopulation() == null || city.getPopulation() <= 0) {
-                return createErrorResponse("Population must be greater than 0", HttpStatus.BAD_REQUEST);
-            }
-
-            if (city.getArea() == null || city.getArea() <= 0) {
-                return createErrorResponse("Area must be greater than 0", HttpStatus.BAD_REQUEST);
-            }
-
-            if (city.getCoordinates() == null) {
-                return createErrorResponse("Coordinates are required", HttpStatus.BAD_REQUEST);
-            }
-
-            if (city.getCoordinates().getX() > 913) {
-                return createErrorResponse("X coordinate must be ≤ 913", HttpStatus.BAD_REQUEST);
-            }
-
-            if (city.getCoordinates().getY() <= -243) {
-                return createErrorResponse("Y coordinate must be > -243", HttpStatus.BAD_REQUEST);
-            }
-
-            if (city.getTimezone() == null || city.getTimezone() < -13 || city.getTimezone() > 15) {
-                return createErrorResponse("Timezone must be between -13 and 15", HttpStatus.BAD_REQUEST);
-            }
-
-            if (city.getCarCode() != null && (city.getCarCode() <= 0 || city.getCarCode() > 1000)) {
-                return createErrorResponse("Car code must be between 1 and 1000", HttpStatus.BAD_REQUEST);
-            }
-
-            if (city.getGovernor() == null || city.getGovernor().getName() == null || city.getGovernor().getName().trim().isEmpty()) {
-                return createErrorResponse("Governor name is required", HttpStatus.BAD_REQUEST);
-            }
-
+            City city = cityService.mapRequestToEntity(cityRequest);
             cityService.addCity(city);
-            return ResponseEntity.ok(city);
+            CityResponseDto response = cityService.mapEntityToResponse(city);
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             System.err.println("Error adding city: " + e.getMessage());
             return createErrorResponse("Failed to add city: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -77,7 +49,8 @@ public class CityController {
 
             City city = cityService.getCity(id);
             if (city != null) {
-                return ResponseEntity.ok(city);
+                CityResponseDto response = cityService.mapEntityToResponse(city);
+                return ResponseEntity.ok(response);
             } else {
                 return createErrorResponse("City with ID " + id + " not found", HttpStatus.NOT_FOUND);
             }
@@ -91,7 +64,6 @@ public class CityController {
     public ResponseEntity<?> getAllCities(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "5") int size,
-
             @RequestParam(value = "idFilter", defaultValue = "") String idFilter,
             @RequestParam(value = "nameFilter", defaultValue = "") String nameFilter,
             @RequestParam(value = "coordinatesXFilter", defaultValue = "") String coordinatesXFilter,
@@ -108,16 +80,13 @@ public class CityController {
             @RequestParam(value = "governorFilter", defaultValue = "") String governorFilter,
             @RequestParam(value = "sortBy", defaultValue = "id") String sortBy,
             @RequestParam(value = "sortDirection", defaultValue = "asc") String sortDirection) {
-
         try {
             if (page < 0) {
                 return createErrorResponse("Page number cannot be negative", HttpStatus.BAD_REQUEST);
             }
-
             if (size <= 0 || size > 100) {
                 return createErrorResponse("Page size must be between 1 and 100", HttpStatus.BAD_REQUEST);
             }
-
             Map<String, String> filters = new HashMap<>();
             filters.put("id", idFilter);
             filters.put("name", nameFilter);
@@ -133,27 +102,23 @@ public class CityController {
             filters.put("carCode", carCodeFilter);
             filters.put("government", governmentFilter);
             filters.put("governor", governorFilter);
-
             List<City> filteredCities = cityService.getCitiesWithFiltersAndSort(filters, sortBy, sortDirection);
-
             int totalCities = filteredCities.size();
             int totalPages = (int) Math.ceil((double) totalCities / size);
-
             if (page < 0) page = 0;
             if (size <= 0) size = 5;
-
             int fromIndex = page * size;
             if (fromIndex >= totalCities) {
                 fromIndex = Math.max(0, (totalPages - 1) * size);
                 page = Math.max(0, totalPages - 1);
             }
-
             int toIndex = Math.min(fromIndex + size, totalCities);
-            List<City> pageContent = fromIndex < totalCities ?
-                    filteredCities.subList(fromIndex, toIndex) : List.of();
-
+            List<City> pageContent = fromIndex < totalCities ? filteredCities.subList(fromIndex, toIndex) : List.of();
+            List<CityResponseDto> pageContentDto = pageContent.stream()
+                    .map(cityService::mapEntityToResponse)
+                    .collect(Collectors.toList());
             Map<String, Object> response = new HashMap<>();
-            response.put("cities", pageContent);
+            response.put("cities", pageContentDto);
             response.put("currentPage", page);
             response.put("totalItems", totalCities);
             response.put("totalPages", totalPages);
@@ -161,9 +126,7 @@ public class CityController {
             response.put("filters", filters);
             response.put("sortBy", sortBy);
             response.put("sortDirection", sortDirection);
-
             return ResponseEntity.ok(response);
-
         } catch (Exception e) {
             System.err.println("Error in getAllCities: " + e.getMessage());
             return createErrorResponse("Failed to retrieve cities: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -171,56 +134,13 @@ public class CityController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateCity(@PathVariable("id") Long id, @RequestBody City city) {
+    public ResponseEntity<?> updateCity(@PathVariable("id") Long id, @Valid @RequestBody CityRequestDto cityRequest) {
         try {
-            if (id == null || id <= 0) {
-                return createErrorResponse("Invalid city ID", HttpStatus.BAD_REQUEST);
-            }
-
-            City existingCity = cityService.getCity(id);
-            if (existingCity == null) {
-                return createErrorResponse("City with ID " + id + " not found", HttpStatus.NOT_FOUND);
-            }
-
-            if (city.getName() == null || city.getName().trim().isEmpty()) {
-                return createErrorResponse("City name is required", HttpStatus.BAD_REQUEST);
-            }
-
-            if (city.getPopulation() == null || city.getPopulation() <= 0) {
-                return createErrorResponse("Population must be greater than 0", HttpStatus.BAD_REQUEST);
-            }
-
-            if (city.getArea() == null || city.getArea() <= 0) {
-                return createErrorResponse("Area must be greater than 0", HttpStatus.BAD_REQUEST);
-            }
-
-            if (city.getCoordinates() == null) {
-                return createErrorResponse("Coordinates are required", HttpStatus.BAD_REQUEST);
-            }
-
-            if (city.getCoordinates().getX() > 913) {
-                return createErrorResponse("X coordinate must be ≤ 913", HttpStatus.BAD_REQUEST);
-            }
-
-            if (city.getCoordinates().getY() <= -243) {
-                return createErrorResponse("Y coordinate must be > -243", HttpStatus.BAD_REQUEST);
-            }
-
-            if (city.getTimezone() == null || city.getTimezone() < -13 || city.getTimezone() > 15) {
-                return createErrorResponse("Timezone must be between -13 and 15", HttpStatus.BAD_REQUEST);
-            }
-
-            if (city.getCarCode() != null && (city.getCarCode() <= 0 || city.getCarCode() > 1000)) {
-                return createErrorResponse("Car code must be between 1 and 1000", HttpStatus.BAD_REQUEST);
-            }
-
-            if (city.getGovernor() == null || city.getGovernor().getName() == null || city.getGovernor().getName().trim().isEmpty()) {
-                return createErrorResponse("Governor name is required", HttpStatus.BAD_REQUEST);
-            }
-
+            City city = cityService.mapRequestToEntity(cityRequest);
             city.setId(id);
             cityService.updateCity(city);
-            return ResponseEntity.ok(city);
+            CityResponseDto response = cityService.mapEntityToResponse(city);
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             System.err.println("Error updating city: " + e.getMessage());
             return createErrorResponse("Failed to update city: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -274,7 +194,6 @@ public class CityController {
         return ResponseEntity.ok(coordinates);
     }
 
-
     @GetMapping("/average-car-code")
     public ResponseEntity<?> getAverageCarCode() {
         try {
@@ -294,7 +213,10 @@ public class CityController {
             }
 
             List<City> cities = cityService.getCitiesWithTimezoneLessThan(timezone);
-            return ResponseEntity.ok(cities);
+            List<CityResponseDto> citiesDto = cities.stream()
+                    .map(cityService::mapEntityToResponse)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(citiesDto);
         } catch (Exception e) {
             System.err.println("Error getting cities with timezone less than " + timezone + ": " + e.getMessage());
             return createErrorResponse("Failed to get cities with timezone greater than " + timezone + ": " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);

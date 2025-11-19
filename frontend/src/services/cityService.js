@@ -92,7 +92,7 @@ class CityService {
 
             return await this.request(`/?${params}`);
         } catch (error) {
-            throw new Error(`Failed to fetch cities: ${error.message}`);
+            throw new Error(`Failed to fetch cities: server error`);
         }
     }
 
@@ -120,7 +120,7 @@ class CityService {
                 body: city,
             });
         } catch (error) {
-            throw new Error(`Failed to create city: ${error.message}`);
+            throw error;
         }
     }
 
@@ -141,7 +141,7 @@ class CityService {
                 body: city,
             });
         } catch (error) {
-            throw new Error(`Failed to update city: ${error.message}`);
+            throw new Error(`Failed to update city`);
         }
     }
 
@@ -155,7 +155,7 @@ class CityService {
                 method: 'DELETE',
             });
         } catch (error) {
-            throw new Error(`Failed to delete city: ${error.message}`);
+            throw new Error(`Failed to delete city`);
         }
     }
 
@@ -164,7 +164,7 @@ class CityService {
         try {
             return await this.request('/sum-of-timezones');
         } catch (error) {
-            throw new Error(`Failed to calculate sum of timezones: ${error.message}`);
+            throw new Error(`Failed to calculate sum of timezones`);
         }
     }
 
@@ -172,7 +172,7 @@ class CityService {
         try {
             return await this.request('/average-car-code');
         } catch (error) {
-            throw new Error(`Failed to calculate average car code: ${error.message}`);
+            throw new Error(`Failed to calculate average car code`);
         }
     }
 
@@ -183,7 +183,7 @@ class CityService {
             }
             return await this.request(`/timezone-less-than/${timezone}`);
         } catch (error) {
-            throw new Error(`Failed to fetch cities by timezone: ${error.message}`);
+            throw new Error(`Failed to fetch cities by timezone`);
         }
     }
 
@@ -191,7 +191,7 @@ class CityService {
         try {
             return await this.request('/distance-to-most-populated');
         } catch (error) {
-            throw new Error(`Failed to calculate distance to most populated city: ${error.message}`);
+            throw new Error(`Failed to calculate distance to most populated city`);
         }
     }
 
@@ -199,7 +199,7 @@ class CityService {
         try {
             return await this.request('/distance-to-newest');
         } catch (error) {
-            throw new Error(`Failed to calculate distance to newest city: ${error.message}`);
+            throw new Error(`Failed to calculate distance to newest city`);
         }
     }
 
@@ -207,7 +207,7 @@ class CityService {
         try {
             return await this.request('/governors');
         } catch (error) {
-            throw new Error(`Failed to fetch governors: ${error.message}`);
+            throw new Error(`Failed to fetch governors`);
         }
     }
 
@@ -215,16 +215,16 @@ class CityService {
         try {
             return await this.request('/coordinates');
         } catch (error) {
-            throw new Error(`Failed to fetch coordinates: ${error.message}`);
+            throw new Error(`Failed to fetch coordinates`);
         }
     }
 
     validateCityData(city) {
         const errors = [];
 
-        if (!city.name || !city.name.trim()) {
-            errors.push('City name is required');
-        }
+        // if (!city.name || !city.name.trim()) {
+        //     errors.push('City name is required');
+        // }
 
         if (!city.population || city.population <= 0) {
             errors.push('Population must be greater than 0');
@@ -256,10 +256,20 @@ class CityService {
         if (!city.governor || !city.governor.name || !city.governor.name.trim()) {
             errors.push('Governor name is required');
         }
+        if (city.establishmentDate) {
+            const estDate = new Date(city.establishmentDate);
+            const today = new Date();
+            const estDay = new Date(estDate.getFullYear(), estDate.getMonth(), estDate.getDate());
+            const todayDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+            if (estDay > todayDay) {
+                errors.push('Establishment date must be before current date');
+            }
+        }
 
         if (errors.length > 0) {
             throw new Error(errors.join('; '));
         }
+
     }
 }
 

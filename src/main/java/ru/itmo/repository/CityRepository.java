@@ -1,8 +1,8 @@
-package com.example.repository;
+package ru.itmo.repository;
 
-import com.example.model.City;
-import com.example.model.Coordinates;
-import com.example.model.Human;
+import ru.itmo.model.City;
+import ru.itmo.model.Coordinates;
+import ru.itmo.model.Human;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;

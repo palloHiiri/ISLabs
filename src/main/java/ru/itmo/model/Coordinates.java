@@ -1,5 +1,6 @@
-package com.example.model;
+package ru.itmo.model;
 
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

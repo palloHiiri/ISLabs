@@ -1,4 +1,4 @@
-package com.example.config;
+package ru.itmo.config;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -11,7 +11,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan(basePackages = "com.example")
+@ComponentScan(basePackages = "ru.itmo")
 @Import(HibernateConfig.class)
 public class WebConfig implements WebMvcConfigurer {
 
@@ -29,4 +29,5 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/static/**")
                 .addResourceLocations("/static/");
     }
+
 }
