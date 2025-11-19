@@ -41,7 +41,7 @@ public class HumanController {
     @PostMapping("/")
     public ResponseEntity<?> addHuman(@RequestBody Human human) {
         try {
-            Long id = humanService.addHuman(human);
+            Long id = humanService.addHuman(human).getId();
             return ResponseEntity.ok(id);
         } catch (Exception e) {
             return createErrorResponse("Failed to add human: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);

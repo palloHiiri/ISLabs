@@ -141,7 +141,7 @@ class CityService {
                 body: city,
             });
         } catch (error) {
-            throw new Error(`Failed to update city`);
+            throw new Error(`Failed to update city: ${error.message}`);
         }
     }
 

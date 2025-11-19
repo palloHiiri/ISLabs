@@ -35,15 +35,15 @@ public class CityRepository {
         return session.createQuery("SELECT DISTINCT c.coordinates FROM City c WHERE c.coordinates IS NOT NULL", Coordinates.class).list();
     }
 
-    public Long save(City city) {
+    public City save(City city) {
         Session session = sessionFactory.getCurrentSession();
-        return (Long) session.save(city);
+        return session.merge(city);
     }
 
-    public void update(City city) {
-        Session session = sessionFactory.getCurrentSession();
-        session.merge(city);
-    }
+//    public void update(City city) {
+//        Session session = sessionFactory.getCurrentSession();
+//        session.merge(city);
+//    }
 
     public Double getSumOfTimezones() {
         Session session = sessionFactory.getCurrentSession();
@@ -316,18 +316,32 @@ public class CityRepository {
         return query.uniqueResult() > 0;
     }
 
-    public City findCityByGovernorPassport(Long passport) {
+    public List<City> findCityByGovernorPassport(Long passport) {
         Session session = sessionFactory.getCurrentSession();
         Query<City> query = session.createQuery("FROM City c WHERE c.governor.passport = :passport", City.class);
         query.setParameter("passport", passport);
-        return query.uniqueResult();
+        return query.list();
     }
 
-    public List<Human> findAllGovernors() {
+    public List<City> findCityByGovernorPassport(Long passport) {
         Session session = sessionFactory.getCurrentSession();
-        return session.createQuery(
-                "SELECT DISTINCT c.governor FROM City c WHERE c.governor IS NOT NULL",
-                Human.class
-        ).list();
+        Query<City> query = session.createQuery(
+                "FROM City c WHERE c.governor.passport = :passport", City.class
+        );
+        query.setParameter("passport", passport);
+        return query.list();
+    }
+
+    public boolean existsByGovernorPassportExceptId(Long passport, Long excludeId) {
+        Session session = sessionFactory.getCurrentSession();
+        String hql = "select count(c) from City c where c.governor.passport = :passport";
+        if (excludeId != null) {
+            hql += " and c.id <> :excludeId";
+        }
+        Query<Long> q = session.createQuery(hql, Long.class);
+        q.setParameter("passport", passport);
+        if (excludeId != null) q.setParameter("excludeId", excludeId);
+        Long count = q.uniqueResult();
+        return count != null && count > 0;
     }
 }
