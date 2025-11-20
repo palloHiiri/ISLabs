@@ -62,7 +62,7 @@ public class CityRepository {
     public List<City> getCitiesWithTimezoneLessThan(Integer timezone) {
         Session session = sessionFactory.getCurrentSession();
         Query<City> query = session.createQuery(
-                "select distinct c from City c left join fetch c.governor g where c.timezone > :timezone",
+                "select distinct c from City c left join fetch c.governor g where c.timezone < :timezone",
                 City.class
         );
         query.setParameter("timezone", timezone);
@@ -298,12 +298,6 @@ public class CityRepository {
         return query.list();
     }
 
-    public boolean existsByGovernorPassport(Long passport) {
-        Session session = sessionFactory.getCurrentSession();
-        Query<Long> query = session.createQuery("SELECT COUNT(c) FROM City c WHERE c.governor.passport = :passport", Long.class);
-        query.setParameter("passport", passport);
-        return query.uniqueResult() > 0;
-    }
 
     public boolean existsByPostalCode(Long postalCode) {
         Session session = sessionFactory.getCurrentSession();

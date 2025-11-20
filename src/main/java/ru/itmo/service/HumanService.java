@@ -33,5 +33,28 @@ public class HumanService {
         return humanRepository.existsByPassport(passport);
     }
 
+    public Human processGovernor(Human governor) {
+        if (governor.getPassport() == null) {
+            throw new IllegalArgumentException("Governor passport is required");
+        }
+
+        Human existingGovernor = humanRepository.findByPassport(governor.getPassport());
+
+        if (existingGovernor != null) {
+            if (!existingGovernor.getName().equals(governor.getName())) {
+                throw new IllegalArgumentException(
+                        "Governor with passport " + governor.getPassport() +
+                                " already exists with different name: '" + existingGovernor.getName() +
+                                "' instead of '" + governor.getName() + "'"
+                );
+            }
+            return existingGovernor;
+        } else {
+            Long governorId = humanRepository.save(governor);
+            governor.setId(governorId);
+            return governor;
+        }
+    }
+
 
 }

@@ -319,6 +319,5 @@ class CityService {
     }
 
 }
- const cityService = new CityService();
-export default cityService;
+const cityService = new CityService();
 export { cityService };

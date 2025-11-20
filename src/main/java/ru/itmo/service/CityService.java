@@ -34,19 +34,17 @@ public class CityService {
     @Transactional
     public Long addCity(City city) {
         cityValidator.validateUniqueness(city, null);
+
         if (city.getCreationDate() == null) {
             city.setCreationDate(java.time.LocalDate.now());
         }
-        if (city.getGovernor() != null && city.getGovernor().getId() == null) {
-            boolean exists = humanService.existsByPassport(city.getGovernor().getPassport());
-            if (!exists) {
-                Long governorId = humanService.addHuman(city.getGovernor());
-                city.getGovernor().setId(governorId);
-            } else {
-                Human existingGovernor = humanRepository.findByPassport(city.getGovernor().getPassport());
-                city.setGovernor(existingGovernor);
-            }
+
+        // Обработка губернатора с правильной логикой проверки
+        if (city.getGovernor() != null) {
+            Human governor = humanService.processGovernor(city.getGovernor());
+            city.setGovernor(governor);
         }
+
         Long id = cityRepository.save(city);
         webSocketHandler.broadcastUpdate("CITY_ADDED", city);
         return id;
@@ -61,18 +59,10 @@ public class CityService {
     public void updateCity(City city) {
         cityValidator.validateUniqueness(city, city.getId());
 
+        // Обработка губернатора при обновлении
         if (city.getGovernor() != null) {
-            Long passport = city.getGovernor().getPassport();
-            Human existingGovernor = humanRepository.findByPassport(passport);
-
-            if (existingGovernor != null) {
-                existingGovernor.setName(city.getGovernor().getName());
-                humanRepository.update(existingGovernor);
-                city.setGovernor(existingGovernor);
-            } else {
-                Long governorId = humanRepository.save(city.getGovernor());
-                city.getGovernor().setId(governorId);
-            }
+            Human governor = humanService.processGovernor(city.getGovernor());
+            city.setGovernor(governor);
         }
 
         cityRepository.update(city);
@@ -131,5 +121,22 @@ public class CityService {
 
     public CityResponseDto mapEntityToResponse(City city) {
         return cityMapper.toResponseDto(city);
+    }
+
+    public Long addCityInCurrentTransaction(City city) {
+        cityValidator.validateUniqueness(city, null);
+
+        if (city.getCreationDate() == null) {
+            city.setCreationDate(java.time.LocalDate.now());
+        }
+
+        if (city.getGovernor() != null) {
+            Human governor = humanService.processGovernor(city.getGovernor());
+            city.setGovernor(governor);
+        }
+
+        Long id = cityRepository.save(city);
+        webSocketHandler.broadcastUpdate("CITY_ADDED", city);
+        return id;
     }
 }

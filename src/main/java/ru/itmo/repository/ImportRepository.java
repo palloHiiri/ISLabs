@@ -9,10 +9,10 @@ import ru.itmo.model.ImportOperation;
 import java.util.List;
 
 @Repository
-public class ImportOperationRepository {
+public class ImportRepository {
     private final SessionFactory sessionFactory;
 
-    public ImportOperationRepository(SessionFactory sessionFactory) {
+    public ImportRepository(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
 
@@ -24,6 +24,11 @@ public class ImportOperationRepository {
     public ImportOperation findById(Long id) {
         Session session = sessionFactory.getCurrentSession();
         return session.get(ImportOperation.class, id);
+    }
+
+    public void update(ImportOperation op) {
+        Session session = sessionFactory.getCurrentSession();
+        session.merge(op);
     }
 
     public long countAll() {

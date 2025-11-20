@@ -1,7 +1,6 @@
 package ru.itmo.validator;
 
 import ru.itmo.model.City;
-import ru.itmo.model.Human;
 import ru.itmo.repository.CityRepository;
 import org.springframework.stereotype.Component;
 
@@ -14,12 +13,6 @@ public class CityValidator {
     }
 
     public void validateUniqueness(City city, Long excludeId) {
-        if (city.getGovernor() != null && city.getGovernor().getPassport() != null) {
-            City existingCity = cityRepository.findCityByGovernorPassport(city.getGovernor().getPassport());
-            if (existingCity != null && (excludeId == null || !existingCity.getId().equals(excludeId)) && !existingCity.getGovernor().getName().equals(city.getGovernor().getName())) {
-                throw new IllegalArgumentException("Governor passport already exists with a different name");
-            }
-        }
         if (city.getPostalCode() != null) {
             if (cityRepository.existsByPostalCode(city.getPostalCode())) {
                 if (excludeId == null || !cityRepository.findById(excludeId).getPostalCode().equals(city.getPostalCode())) {
