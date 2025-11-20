@@ -10,17 +10,18 @@ const CityForm = ({ city, onSave, onCancel }) => {
     const [formData, setFormData] = useState({
         name: '',
         coordinates: { x: 0, y: 0 },
-        area: 0,
-        population: 0,
+        area: 1,
+        population: 1,
         establishmentDate: '',
         capital: false,
         metersAboveSeaLevel: null,
         timezone: 0,
         carCode: null,
         government: 'ARISTOCRACY',
-        governor: { name: '', passport: 0},
-        postalCode: 0,
-        oktmo: 0,
+        governor: { name: '', passport: null},
+        postalCode: null,
+        oktmo: null,
+
     });
     const [errors, setErrors] = useState({});
     const [isLoading, setIsLoading] = useState(false);
@@ -189,13 +190,13 @@ const CityForm = ({ city, onSave, onCancel }) => {
                 newErrors.establishmentDate = 'Establishment date cannot be in the future';
             }
         }
-        if(formData.postalCode < 100000 || formData.postalCode > 999999){
+        if(!formData.postalCode || formData.postalCode < 100000 || formData.postalCode > 999999){
             newErrors.postalCode = 'Postal code must be exactly 6 characters long';
         }
-        if(formData.governor.passport < 1000000000 || formData.governor.passport > 9999999999){
+        if(!formData.governor.passport || formData.governor.passport < 1000000000 || formData.governor.passport > 9999999999){
             newErrors.passport = 'Passport number must be exactly 10 characters long';
         }
-        if(formData.oktmo < 10000000 || formData.oktmo > 99999999){
+        if(!formData.oktmo || formData.oktmo < 10000000 || formData.oktmo > 99999999){
             newErrors.oktmo = 'oktmo code must be exactly 8 characters long';
         }
 
@@ -520,7 +521,7 @@ const CityForm = ({ city, onSave, onCancel }) => {
                                         name="postalCode"
                                         value={formData.postalCode || ''}
                                         onChange={handleChange}
-                                        placeholder="Optional"
+                                        placeholder="Enter postal code..."
                                         className={getError('postalCode') ? 'border-red-500' : ''}
                                     />
                                     {getError('postalCode') && <span className="text-red-500">{getError('postalCode')}</span>}
@@ -532,7 +533,7 @@ const CityForm = ({ city, onSave, onCancel }) => {
                                         name="oktmo"
                                         value={formData.oktmo || ''}
                                         onChange={handleChange}
-                                        placeholder="Optional"
+                                        placeholder="Enter oktmo..."
                                         className={getError('oktmo') ? 'border-red-500' : ''}
                                     />
                                     {getError('oktmo') && <span className="text-red-500">{getError('oktmo')}</span>}
@@ -576,7 +577,7 @@ const CityForm = ({ city, onSave, onCancel }) => {
                                             value={formData.governor.passport}
                                             onChange={handleChange}
                                             className={getError('passport') ? 'border-red-500' : ''}
-                                            placeholder="Enter governor name..."
+                                            placeholder="Enter governor passport..."
                                         />
                                         {getError('passport') && <span className="text-red-500">{getError('passport')}</span>}
                                     </div>

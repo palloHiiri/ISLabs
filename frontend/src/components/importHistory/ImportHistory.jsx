@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { cityService } from '../../services/cityService.js';
 import './ImportHistory.css';
 
 const ImportHistory = () => {
+    const navigate = useNavigate();
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -30,7 +32,6 @@ const ImportHistory = () => {
                 } else if (typeof resp.total === 'number') {
                     setTotalPages(Math.max(1, Math.ceil(resp.total / size)));
                 } else {
-                    // fallback
                     setTotalPages(Array.isArray(list) ? Math.max(1, Math.ceil(list.length / size)) : 1);
                 }
             } else {
@@ -91,6 +92,12 @@ const ImportHistory = () => {
         <div className="import-history-page">
             <div className="header">
                 <h1>История импортов</h1>
+                <button
+                    onClick={() => navigate('/')}
+                    className="header-controls button"
+                >
+                    ← Back to Cities
+                </button>
             </div>
 
             {loading && <div className="loading">Загрузка...</div>}
