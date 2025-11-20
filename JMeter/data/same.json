@@ -1,20 +1,20 @@
 [
   {
-    "name": "Moscow",
+    "name": "Жук4",
     "coordinates": { "x": 37.6173, "y": 55.7558 },
     "area": 2561.0,
     "population": 12678000,
-    "timezone": 3,
-    "carCode": 77,
-    "postalCode": "102220",
-    "oktmo": "45382222",
+    "timezone": 2,
+    "carCode": 7,
+    "postalCode": "574839",
+    "oktmo": "29384756",
     "establishmentDate": "1147-04-04",
     "capital": true,
     "government": "PATRIARCHY",
     "metersAboveSeaLevel": 156,
     "governor": {
-      "passport": 5554443322,
-      "name": "Ildar Safin"
+      "passport": 1922837465,
+      "name": "Собянин"
     }
   }
 ]

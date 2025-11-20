@@ -39,7 +39,6 @@ public class CityService {
             city.setCreationDate(java.time.LocalDate.now());
         }
 
-        // Обработка губернатора с правильной логикой проверки
         if (city.getGovernor() != null) {
             Human governor = humanService.processGovernor(city.getGovernor());
             city.setGovernor(governor);
@@ -59,7 +58,6 @@ public class CityService {
     public void updateCity(City city) {
         cityValidator.validateUniqueness(city, city.getId());
 
-        // Обработка губернатора при обновлении
         if (city.getGovernor() != null) {
             Human governor = humanService.processGovernor(city.getGovernor());
             city.setGovernor(governor);
@@ -123,20 +121,5 @@ public class CityService {
         return cityMapper.toResponseDto(city);
     }
 
-    public Long addCityInCurrentTransaction(City city) {
-        cityValidator.validateUniqueness(city, null);
 
-        if (city.getCreationDate() == null) {
-            city.setCreationDate(java.time.LocalDate.now());
-        }
-
-        if (city.getGovernor() != null) {
-            Human governor = humanService.processGovernor(city.getGovernor());
-            city.setGovernor(governor);
-        }
-
-        Long id = cityRepository.save(city);
-        webSocketHandler.broadcastUpdate("CITY_ADDED", city);
-        return id;
-    }
 }

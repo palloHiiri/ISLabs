@@ -3,7 +3,6 @@ package ru.itmo.controller;
 import ru.itmo.dto.request.CityRequestDto;
 import ru.itmo.dto.response.CityResponseDto;
 import jakarta.validation.Valid;
-import ru.itmo.dto.response.CityResponseDto;
 import ru.itmo.model.City;
 import ru.itmo.model.Coordinates;
 import ru.itmo.model.Human;
@@ -12,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

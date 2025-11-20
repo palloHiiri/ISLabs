@@ -1,0 +1,40 @@
+[
+  {
+    "name": "Жук4",
+    "coordinates": { "x": 37.6173, "y": 55.7558 },
+    "area": 2561.0,
+    "population": 12678000,
+    "timezone": 2,
+    "carCode": 7,
+    "postalCode": "143436",
+    "oktmo": "45334332",
+    "establishmentDate": "1147-04-04",
+    "capital": true,
+    "government": "PATRIARCHY",
+    "metersAboveSeaLevel": 156,
+    "governor": {
+      "passport": 4747474747,
+      "name": "Жук4"
+    }
+  },
+
+  {
+    "name": "Жук4",
+    "coordinates": { "x": 37.6173, "y": 55.7558 },
+    "area": 2561.0,
+    "population": 12678000,
+    "timezone": 3,
+    "carCode": 77,
+    "postalCode": "123436",
+    "oktmo": "45324232",
+    "establishmentDate": "1147-04-04",
+    "capital": true,
+    "government": "PATRIARCHY",
+    "metersAboveSeaLevel": 156,
+    "governor": {
+      "passport": 4747474747,
+      "name": "Жук4"
+    }
+  }
+
+]

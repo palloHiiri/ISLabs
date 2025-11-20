@@ -9,6 +9,7 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import ru.itmo.dto.request.CityRequestDto;
+import ru.itmo.exception.ImportValidationException;
 import ru.itmo.model.ImportOperation;
 import ru.itmo.repository.ImportRepository;
 import ru.itmo.repository.CityRepository;
@@ -95,52 +96,6 @@ public class ImportService {
 
                 City entity = cityService.mapRequestToEntity(dto);
 
-                String postalStr = null;
-                if (dto != null) {
-                    try {
-                        Object p = dto.getClass().getMethod("getPostalCode").invoke(dto);
-                        postalStr = p != null ? p.toString() : null;
-                    } catch (Exception ignore) {
-                        postalStr = entity.getPostalCode() != null ? entity.getPostalCode().toString() : null;
-                    }
-                }
-
-                if (postalStr != null && !postalStr.isBlank()) {
-                    try {
-                        Long postalLong = Long.parseLong(postalStr);
-                        if (cityRepository.existsByPostalCode(postalLong)) {
-                            msg.append("item ").append(i).append(": postalCode already exists in DB ").append(postalStr).append("; ");
-                        }
-                    } catch (NumberFormatException ignored) {
-                    }
-                    if (!seenPostal.add(postalStr)) {
-                        msg.append("item ").append(i).append(": duplicate postalCode in import ").append(postalStr).append("; ");
-                    }
-                }
-
-                String oktmoStr = null;
-                if (dto != null) {
-                    try {
-                        Object o = dto.getClass().getMethod("getOktmo").invoke(dto);
-                        oktmoStr = o != null ? o.toString() : null;
-                    } catch (Exception ignore) {
-                        oktmoStr = entity.getOktmo() != null ? entity.getOktmo().toString() : null;
-                    }
-                }
-
-                if (oktmoStr != null && !oktmoStr.isBlank()) {
-                    try {
-                        Long oktmoLong = Long.parseLong(oktmoStr);
-                        if (cityRepository.existsByOktmo(oktmoLong)) {
-                            msg.append("item ").append(i).append(": oktmo already exists in DB ").append(oktmoStr).append("; ");
-                        }
-                    } catch (NumberFormatException ignored) {
-                    }
-                    if (!seenOktmo.add(oktmoStr)) {
-                        msg.append("item ").append(i).append(": duplicate oktmo in import ").append(oktmoStr).append("; ");
-                    }
-                }
-
                 try {
                     cityValidator.validateUniqueness(entity, null);
                 } catch (Exception ex) {
@@ -158,12 +113,12 @@ public class ImportService {
                     importRepo.update(op);
                     return null;
                 });
-                return op;
+                throw new IllegalArgumentException("Validation errors during import");
             }
 
             int successCount = 0;
             for (City entity : entities) {
-                cityService.addCityInCurrentTransaction(entity);
+                cityService.addCity(entity);
                 successCount++;
             }
 
@@ -175,8 +130,8 @@ public class ImportService {
                 importRepo.update(op);
                 return null;
             });
-
             return op;
+
         } catch (Exception e) {
             op.setStatus("FAILED");
             op.setAddedCount(0);
@@ -185,7 +140,7 @@ public class ImportService {
                 importRepo.update(op);
                 return null;
             });
-            return op;
+            throw new ImportValidationException("Import failed. Incorrect data in file:", e);
         }
     }
 

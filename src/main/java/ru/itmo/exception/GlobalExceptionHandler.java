@@ -29,4 +29,16 @@ public class GlobalExceptionHandler {
         errorResponse.put("timestamp", System.currentTimeMillis());
         return ResponseEntity.status(status).body(errorResponse);
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, Object>> handleIllegalArgumentException(IllegalArgumentException ex) {
+        return createErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ImportValidationException.class)
+    public ResponseEntity<Map<String, Object>> handleImportValidationException(ImportValidationException ex){
+        return createErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+
 }
