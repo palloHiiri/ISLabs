@@ -13,26 +13,6 @@ import java.util.List;
 public class HumanService {
     private final HumanRepository humanRepository;
 
-    @Transactional
-    public Long addHuman(Human human) {
-        return humanRepository.save(human);
-    }
-
-    @Transactional
-    public void updateHuman(Human human) {
-        humanRepository.update(human);
-    }
-
-    @Transactional
-    public void deleteHuman(Human human) {
-        humanRepository.delete(human);
-    }
-
-    @Transactional(readOnly = true)
-    public boolean existsByPassport(Long passport) {
-        return humanRepository.existsByPassport(passport);
-    }
-
     public Human processGovernor(Human governor) {
         if (governor.getPassport() == null) {
             throw new IllegalArgumentException("Governor passport is required");

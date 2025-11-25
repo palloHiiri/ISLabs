@@ -4,15 +4,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import ru.itmo.dto.request.CityRequestDto;
 import ru.itmo.exception.ImportValidationException;
 import ru.itmo.model.ImportOperation;
 import ru.itmo.repository.ImportRepository;
-import ru.itmo.repository.CityRepository;
 import ru.itmo.model.City;
 import ru.itmo.validator.CityValidator;
 
@@ -20,68 +16,46 @@ import jakarta.validation.Validator;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.ValidatorFactory;
+import org.springframework.transaction.annotation.Isolation;
 
 import java.io.InputStream;
 import java.util.*;
-
 @Service
 public class ImportService {
     private final ObjectMapper objectMapper;
     private final ImportRepository importRepo;
     private final CityService cityService;
-    private final TransactionTemplate requiresNewTx;
     private final Validator validator;
-    private final CityRepository cityRepository;
     private final CityValidator cityValidator;
+    private final ImportOperationService importOperationService;
 
     public ImportService(ObjectMapper objectMapper,
                          ImportRepository importRepo,
                          CityService cityService,
-                         PlatformTransactionManager transactionManager,
-                         CityRepository cityRepository,
-                         CityValidator cityValidator) {
+                         CityValidator cityValidator,
+                         ImportOperationService importOperationService) {
         this.objectMapper = objectMapper;
         this.importRepo = importRepo;
         this.cityService = cityService;
-        this.requiresNewTx = new TransactionTemplate(transactionManager);
-        this.requiresNewTx.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         this.validator = factory.getValidator();
-        this.cityRepository = cityRepository;
         this.cityValidator = cityValidator;
+        this.importOperationService = importOperationService;
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public ImportOperation importCities(MultipartFile file) {
-        ImportOperation op = new ImportOperation();
-        op.setStatus("RUNNING");
-        op.setAddedCount(0);
-        op.setMessage(null);
-
-        requiresNewTx.execute(status -> {
-            Long id = importRepo.save(op);
-            op.setId(id);
-            return null;
-        });
+        ImportOperation op = importOperationService.createOperation();
 
         try (InputStream is = file.getInputStream()) {
             List<CityRequestDto> list = objectMapper.readValue(is, new TypeReference<>() {});
+
             if (list == null || list.isEmpty()) {
-                op.setStatus("FAILED");
-                op.setMessage("Empty or invalid JSON array");
-                op.setAddedCount(0);
-                requiresNewTx.execute(status -> {
-                    importRepo.update(op);
-                    return null;
-                });
-                return op;
+                return importOperationService.updateStatus(op, "FAILED", 0, "Empty or invalid JSON array");
             }
 
             StringBuilder msg = new StringBuilder();
             List<City> entities = new ArrayList<>(list.size());
-
-            Set<String> seenPostal = new HashSet<>();
-            Set<String> seenOktmo = new HashSet<>();
 
             for (int i = 0; i < list.size(); i++) {
                 CityRequestDto dto = list.get(i);
@@ -89,7 +63,9 @@ public class ImportService {
                 Set<ConstraintViolation<CityRequestDto>> violations = validator.validate(dto);
                 if (!violations.isEmpty()) {
                     for (ConstraintViolation<CityRequestDto> v : violations) {
-                        msg.append("item ").append(i).append(": ").append(v.getPropertyPath()).append(" ").append(v.getMessage()).append("; ");
+                        msg.append("item ").append(i).append(": ")
+                                .append(v.getPropertyPath()).append(" ")
+                                .append(v.getMessage()).append("; ");
                     }
                     continue;
                 }
@@ -99,20 +75,15 @@ public class ImportService {
                 try {
                     cityValidator.validateUniqueness(entity, null);
                 } catch (Exception ex) {
-                    msg.append("item ").append(i).append(": ").append(ex.getMessage()).append("; ");
+                    msg.append("item ").append(i).append(": ")
+                            .append(ex.getMessage()).append("; ");
                 }
 
                 entities.add(entity);
             }
 
-            if (msg.length() > 0) {
-                op.setStatus("FAILED");
-                op.setAddedCount(0);
-                op.setMessage(msg.toString());
-                requiresNewTx.execute(status -> {
-                    importRepo.update(op);
-                    return null;
-                });
+            if (!msg.isEmpty()) {
+                importOperationService.updateStatus(op, "FAILED", 0, msg.toString());
                 throw new IllegalArgumentException("Validation errors during import");
             }
 
@@ -122,31 +93,17 @@ public class ImportService {
                 successCount++;
             }
 
-            op.setAddedCount(successCount);
-            op.setMessage(null);
-            op.setStatus(successCount == entities.size() ? "SUCCESS" : (successCount == 0 ? "FAILED" : "PARTIAL"));
-
-            requiresNewTx.execute(status -> {
-                importRepo.update(op);
-                return null;
-            });
-            return op;
+            String status = successCount == entities.size() ? "SUCCESS" : "FAILED";
+            return importOperationService.updateStatus(op, status, successCount, null);
 
         } catch (Exception e) {
-            op.setStatus("FAILED");
-            op.setAddedCount(0);
-            op.setMessage("Import error: " + e.getMessage());
-            requiresNewTx.execute(status -> {
-                importRepo.update(op);
-                return null;
-            });
-            throw new ImportValidationException("Import failed. Incorrect data in file:", e);
+            importOperationService.updateStatus(op, "FAILED", 0, "Import error: " + e.getMessage());
+            throw new ImportValidationException("Import failed. Incorrect data in file", e);
         }
     }
 
-
-    @Transactional(readOnly = true)
-    public java.util.Map<String, Object> getImportHistory(int page, int size) {
+    @Transactional(readOnly = true, isolation = Isolation.REPEATABLE_READ)
+    public Map<String, Object> getImportHistory(int page, int size) {
         if (page < 0) page = 0;
         if (size <= 0) size = 10;
 
@@ -156,7 +113,7 @@ public class ImportService {
         if (page >= totalPages) page = Math.max(0, totalPages - 1);
 
         List<ImportOperation> items = importRepo.findPaged(page, size);
-        java.util.Map<String, Object> resp = new java.util.HashMap<>();
+        Map<String, Object> resp = new HashMap<>();
         resp.put("items", items);
         resp.put("currentPage", page);
         resp.put("totalItems", total);

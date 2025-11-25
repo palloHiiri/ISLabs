@@ -22,12 +22,33 @@ public class CityRepository {
 
     public City findById(Long id) {
         Session session = sessionFactory.getCurrentSession();
-        return session.get(City.class, id);
+        Query<City> query = session.createQuery(
+                "SELECT c FROM City c LEFT JOIN FETCH c.governor WHERE c.id = :id",
+                City.class
+        );
+        query.setParameter("id", id);
+        return query.uniqueResult();
     }
 
     public void delete(City city) {
         Session session = sessionFactory.getCurrentSession();
+
+        Human governor = city.getGovernor();
+
         session.delete(city);
+
+        if (governor != null) {
+            Query<Long> query = session.createQuery(
+                    "SELECT COUNT(c) FROM City c WHERE c.governor.id = :governorId",
+                    Long.class
+            );
+            query.setParameter("governorId", governor.getId());
+            Long count = query.uniqueResult();
+
+            if (count == 0) {
+                session.delete(governor);
+            }
+        }
     }
 
     public List<Coordinates> findAllCoordinates() {
