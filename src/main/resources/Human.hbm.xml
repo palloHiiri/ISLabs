@@ -10,7 +10,7 @@
             <column name="name" not-null="true" />
         </property>
         <property name="passport" type="long">
-            <column name="passport" not-null="true" unique="true" />
+            <column name="passport" not-null="true"/>
         </property>
 
     </class>

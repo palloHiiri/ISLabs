@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ru.itmo.dto.request.CityRequestDto;
+import ru.itmo.dto.request.CoordinatesRequestDto;
+import ru.itmo.dto.request.HumanRequestDto;
 import ru.itmo.exception.ImportValidationException;
 import ru.itmo.model.ImportOperation;
 import ru.itmo.repository.ImportRepository;
@@ -69,6 +71,33 @@ public class ImportService {
                     }
                     continue;
                 }
+
+                if (dto.getCoordinates() != null) {
+                    Set<ConstraintViolation<CoordinatesRequestDto>> coordViolations =
+                            validator.validate(dto.getCoordinates());
+                    if (!coordViolations.isEmpty()) {
+                        for (ConstraintViolation<CoordinatesRequestDto> v : coordViolations) {
+                            msg.append("item ").append(i).append(": coordinates.")
+                                    .append(v.getPropertyPath()).append(" ")
+                                    .append(v.getMessage()).append("; ");
+                        }
+                        continue;
+                    }
+                }
+
+                if (dto.getGovernor() != null) {
+                    Set<ConstraintViolation<HumanRequestDto>> humanViolations =
+                            validator.validate(dto.getGovernor());
+                    if (!humanViolations.isEmpty()) {
+                        for (ConstraintViolation<HumanRequestDto> v : humanViolations) {
+                            msg.append("item ").append(i).append(": governor.")
+                                    .append(v.getPropertyPath()).append(" ")
+                                    .append(v.getMessage()).append("; ");
+                        }
+                        continue;
+                    }
+                }
+
 
                 City entity = cityService.mapRequestToEntity(dto);
 

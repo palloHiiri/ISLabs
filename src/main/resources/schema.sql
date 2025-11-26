@@ -10,7 +10,7 @@ CREATE TABLE import_operations (
 CREATE TABLE humans (
                         id BIGSERIAL PRIMARY KEY,
                         name VARCHAR(100) NOT NULL CHECK (name <> ''),
-                        passport BIGINT NOT NULL UNIQUE CHECK (passport >= 1000000000 AND passport <= 9999999999)
+                        passport BIGINT NOT NULL
 );
 
 CREATE TABLE cities (

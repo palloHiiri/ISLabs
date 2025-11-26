@@ -9,13 +9,11 @@ import ru.itmo.model.Human;
 import ru.itmo.dto.request.CityRequestDto;
 import ru.itmo.dto.response.CityResponseDto;
 import ru.itmo.repository.CityRepository;
-import ru.itmo.repository.HumanRepository;
 import ru.itmo.validator.CityValidator;
 import ru.itmo.websocket.CityWebSocketHandler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.*;
-
 
 import java.util.List;
 import java.util.Map;
@@ -29,7 +27,7 @@ public class CityService {
     private final CityValidator cityValidator;
     private final HumanService humanService;
 
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Transactional(isolation =  Isolation.SERIALIZABLE)
     public Long addCity(City city) {
         cityValidator.validateUniqueness(city, null);
 

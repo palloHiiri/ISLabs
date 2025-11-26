@@ -35,14 +35,14 @@ const ImportJsonModal = ({ isOpen, onClose, onImported }) => {
                 await wait(duration);
             } else {
                 const msg = result && result.message ? result.message : 'Импорт завершился с ошибкой';
-                const duration = 5000;
+                const duration = 2000;
                 showError(msg, duration, true);
                 setError(msg);
                 await wait(duration);
             }
         } catch (e) {
             const msg = e.message || 'Ошибка импорта';
-            const duration = 5000;
+            const duration = 2000;
             showError(msg, duration, true);
             setError(msg);
             await wait(duration);

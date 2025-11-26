@@ -17,7 +17,7 @@
         </collectionProp>
       </Arguments>
       <hashTree/>
-      <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="HTTP Request Defaults">
+      <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="HTTP Request Defaults" enabled="true">
         <stringProp name="HTTPSampler.domain">localhost</stringProp>
         <stringProp name="HTTPSampler.port">8080</stringProp>
         <stringProp name="HTTPSampler.protocol">http</stringProp>
@@ -28,7 +28,7 @@
         <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
       </ConfigTestElement>
       <hashTree/>
-      <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager">
+      <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
         <collectionProp name="HeaderManager.headers">
           <elementProp name="" elementType="Header">
             <stringProp name="Header.name">Content-Type</stringProp>
@@ -52,7 +52,7 @@
         </elementProp>
       </ThreadGroup>
       <hashTree>
-        <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="Random Postal">
+        <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="Random Postal" enabled="true">
           <stringProp name="variableName">randomPostal</stringProp>
           <stringProp name="outputFormat"></stringProp>
           <stringProp name="minimumValue">100000</stringProp>
@@ -61,7 +61,7 @@
           <boolProp name="perThread">false</boolProp>
         </RandomVariableConfig>
         <hashTree/>
-        <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="Random Oktmo">
+        <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="Random Oktmo" enabled="true">
           <stringProp name="variableName">randomO</stringProp>
           <stringProp name="outputFormat"></stringProp>
           <stringProp name="minimumValue">10000000</stringProp>
@@ -70,7 +70,7 @@
           <boolProp name="perThread">false</boolProp>
         </RandomVariableConfig>
         <hashTree/>
-        <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="Random Passport">
+        <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="Random Passport" enabled="true">
           <stringProp name="variableName">randomPass</stringProp>
           <stringProp name="outputFormat"></stringProp>
           <stringProp name="minimumValue">1000000000</stringProp>
@@ -79,7 +79,7 @@
           <boolProp name="perThread">false</boolProp>
         </RandomVariableConfig>
         <hashTree/>
-        <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="Random Variable">
+        <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="Random Variable" enabled="true">
           <stringProp name="variableName">randomVar</stringProp>
           <stringProp name="outputFormat"></stringProp>
           <stringProp name="minimumValue">1</stringProp>
@@ -122,14 +122,14 @@
           </elementProp>
         </HTTPSamplerProxy>
         <hashTree>
-          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="City id extractor">
+          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="City id extractor" enabled="true">
             <stringProp name="JSONPostProcessor.referenceNames">randomCityId</stringProp>
             <stringProp name="JSONPostProcessor.jsonPathExprs">$.id</stringProp>
             <stringProp name="JSONPostProcessor.match_numbers">1</stringProp>
           </JSONPostProcessor>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Edit random city">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Edit random city" enabled="true">
           <stringProp name="HTTPSampler.path">${BASE_PATH}/${randomCityId}</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">PUT</stringProp>
@@ -163,105 +163,8 @@
           </elementProp>
         </HTTPSamplerProxy>
         <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Create same city">
-          <stringProp name="HTTPSampler.path">${BASE_PATH}/</stringProp>
-          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-          <stringProp name="HTTPSampler.method">POST</stringProp>
-          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-            <collectionProp name="Arguments.arguments">
-              <elementProp name="" elementType="HTTPArgument">
-                <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{&#xd;
-    &quot;name&quot;: &quot;SAME_CITY&quot;,&#xd;
-    &quot;coordinates&quot;: { &quot;x&quot;: 37.6173, &quot;y&quot;: 55.7558 },&#xd;
-    &quot;area&quot;: 2561.0,&#xd;
-    &quot;population&quot;: 12678000,&#xd;
-    &quot;timezone&quot;: 2,&#xd;
-    &quot;carCode&quot;: 7,&#xd;
-    &quot;postalCode&quot;: &quot;143426&quot;,&#xd;
-    &quot;oktmo&quot;: &quot;45334322&quot;,&#xd;
-    &quot;establishmentDate&quot;: &quot;1147-04-04&quot;,&#xd;
-    &quot;capital&quot;: true,&#xd;
-    &quot;government&quot;: &quot;PATRIARCHY&quot;,&#xd;
-    &quot;metersAboveSeaLevel&quot;: 156,&#xd;
-    &quot;governor&quot;: {&#xd;
-      &quot;passport&quot;: 4747474747,&#xd;
-      &quot;name&quot;: &quot;Жук4&quot;&#xd;
-    }&#xd;
-  }</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-            </collectionProp>
-          </elementProp>
-        </HTTPSamplerProxy>
-        <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get same city" enabled="true">
-          <stringProp name="HTTPSampler.path">${BASE_PATH}/?nameFilter=SAME_CITY</stringProp>
-          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-          <stringProp name="HTTPSampler.method">GET</stringProp>
-          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-          <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
-          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
-            <collectionProp name="Arguments.arguments"/>
-          </elementProp>
-        </HTTPSamplerProxy>
-        <hashTree>
-          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="City id extractor" enabled="true">
-            <stringProp name="JSONPostProcessor.referenceNames">sameCityId</stringProp>
-            <stringProp name="JSONPostProcessor.jsonPathExprs">$.cities[0].id</stringProp>
-            <stringProp name="JSONPostProcessor.match_numbers">1</stringProp>
-          </JSONPostProcessor>
-          <hashTree/>
-        </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Edit same city">
-          <stringProp name="HTTPSampler.path">${BASE_PATH}/${sameCityId}</stringProp>
-          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-          <stringProp name="HTTPSampler.method">PUT</stringProp>
-          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-            <collectionProp name="Arguments.arguments">
-              <elementProp name="" elementType="HTTPArgument">
-                <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{&#xd;
-    &quot;name&quot;: &quot;SAME_CITY_UPDATED&quot;,&#xd;
-    &quot;coordinates&quot;: { &quot;x&quot;: 37.6173, &quot;y&quot;: 55.7558 },&#xd;
-    &quot;area&quot;: 2561.0,&#xd;
-    &quot;population&quot;: 12678000,&#xd;
-    &quot;timezone&quot;: 2,&#xd;
-    &quot;carCode&quot;: 7,&#xd;
-    &quot;postalCode&quot;: &quot;143426&quot;,&#xd;
-    &quot;oktmo&quot;: &quot;45334322&quot;,&#xd;
-    &quot;establishmentDate&quot;: &quot;1147-04-04&quot;,&#xd;
-    &quot;capital&quot;: true,&#xd;
-    &quot;government&quot;: &quot;PATRIARCHY&quot;,&#xd;
-    &quot;metersAboveSeaLevel&quot;: 156,&#xd;
-    &quot;governor&quot;: {&#xd;
-      &quot;passport&quot;: 4747474747,&#xd;
-      &quot;name&quot;: &quot;Жук4&quot;&#xd;
-    }&#xd;
-  }</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-            </collectionProp>
-          </elementProp>
-        </HTTPSamplerProxy>
-        <hashTree/>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Delete random city" enabled="true">
           <stringProp name="HTTPSampler.path">${BASE_PATH}/${randomCityId}</stringProp>
-          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-          <stringProp name="HTTPSampler.method">DELETE</stringProp>
-          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-          <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
-          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
-            <collectionProp name="Arguments.arguments"/>
-          </elementProp>
-        </HTTPSamplerProxy>
-        <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Delete same city">
-          <stringProp name="HTTPSampler.path">${BASE_PATH}/${sameCityId}</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">DELETE</stringProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -282,27 +185,6 @@
               <elementProp name="${filename}" elementType="HTTPFileArg">
                 <stringProp name="File.mimetype">application/json</stringProp>
                 <stringProp name="File.path">${filename}</stringProp>
-                <stringProp name="File.paramname">file</stringProp>
-              </elementProp>
-            </collectionProp>
-          </elementProp>
-          <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
-          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
-            <collectionProp name="Arguments.arguments"/>
-          </elementProp>
-        </HTTPSamplerProxy>
-        <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Import same json" enabled="true">
-          <stringProp name="HTTPSampler.path">${BASE_PATH}/import</stringProp>
-          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-          <stringProp name="HTTPSampler.method">POST</stringProp>
-          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-          <boolProp name="HTTPSampler.DO_MULTIPART_POST">true</boolProp>
-          <elementProp name="HTTPsampler.Files" elementType="HTTPFileArgs">
-            <collectionProp name="HTTPFileArgs.files">
-              <elementProp name="data/same.json" elementType="HTTPFileArg">
-                <stringProp name="File.mimetype">application/json</stringProp>
-                <stringProp name="File.path">data/same.json</stringProp>
                 <stringProp name="File.paramname">file</stringProp>
               </elementProp>
             </collectionProp>
@@ -363,6 +245,136 @@
         <stringProp name="filename"></stringProp>
       </ResultCollector>
       <hashTree/>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Same user">
+        <intProp name="ThreadGroup.num_threads">2</intProp>
+        <intProp name="ThreadGroup.ramp_time">0</intProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
+          <stringProp name="LoopController.loops">1</stringProp>
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+        </elementProp>
+      </ThreadGroup>
+      <hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Create same city">
+          <stringProp name="HTTPSampler.path">${BASE_PATH}/</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+    &quot;name&quot;: &quot;SAME_CITY&quot;,&#xd;
+    &quot;coordinates&quot;: { &quot;x&quot;: 37.6173, &quot;y&quot;: 55.7558 },&#xd;
+    &quot;area&quot;: 2561.0,&#xd;
+    &quot;population&quot;: 12678000,&#xd;
+    &quot;timezone&quot;: 2,&#xd;
+    &quot;carCode&quot;: 7,&#xd;
+    &quot;postalCode&quot;: &quot;143426&quot;,&#xd;
+    &quot;oktmo&quot;: &quot;45334322&quot;,&#xd;
+    &quot;establishmentDate&quot;: &quot;1147-04-04&quot;,&#xd;
+    &quot;capital&quot;: true,&#xd;
+    &quot;government&quot;: &quot;PATRIARCHY&quot;,&#xd;
+    &quot;metersAboveSeaLevel&quot;: 156,&#xd;
+    &quot;governor&quot;: {&#xd;
+      &quot;passport&quot;: 4747474747,&#xd;
+      &quot;name&quot;: &quot;Жук4&quot;&#xd;
+    }&#xd;
+  }</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get same city">
+          <stringProp name="HTTPSampler.path">${BASE_PATH}/?nameFilter=SAME_CITY</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="City id extractor" enabled="true">
+            <stringProp name="JSONPostProcessor.referenceNames">sameCityId</stringProp>
+            <stringProp name="JSONPostProcessor.jsonPathExprs">$.cities[0].id</stringProp>
+            <stringProp name="JSONPostProcessor.match_numbers">1</stringProp>
+          </JSONPostProcessor>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Edit same city" enabled="true">
+          <stringProp name="HTTPSampler.path">${BASE_PATH}/${sameCityId}</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <stringProp name="HTTPSampler.method">PUT</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+    &quot;name&quot;: &quot;SAME_CITY_UPDATED&quot;,&#xd;
+    &quot;coordinates&quot;: { &quot;x&quot;: 37.6173, &quot;y&quot;: 55.7558 },&#xd;
+    &quot;area&quot;: 2561.0,&#xd;
+    &quot;population&quot;: 12678000,&#xd;
+    &quot;timezone&quot;: 2,&#xd;
+    &quot;carCode&quot;: 7,&#xd;
+    &quot;postalCode&quot;: &quot;143426&quot;,&#xd;
+    &quot;oktmo&quot;: &quot;45334322&quot;,&#xd;
+    &quot;establishmentDate&quot;: &quot;1147-04-04&quot;,&#xd;
+    &quot;capital&quot;: true,&#xd;
+    &quot;government&quot;: &quot;PATRIARCHY&quot;,&#xd;
+    &quot;metersAboveSeaLevel&quot;: 156,&#xd;
+    &quot;governor&quot;: {&#xd;
+      &quot;passport&quot;: 4747474747,&#xd;
+      &quot;name&quot;: &quot;Жук4&quot;&#xd;
+    }&#xd;
+  }</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Delete same city" enabled="true">
+          <stringProp name="HTTPSampler.path">${BASE_PATH}/${sameCityId}</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <stringProp name="HTTPSampler.method">DELETE</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Import same json" enabled="true">
+          <stringProp name="HTTPSampler.path">${BASE_PATH}/import</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">true</boolProp>
+          <elementProp name="HTTPsampler.Files" elementType="HTTPFileArgs">
+            <collectionProp name="HTTPFileArgs.files">
+              <elementProp name="data/same.json" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">application/json</stringProp>
+                <stringProp name="File.path">data/same.json</stringProp>
+                <stringProp name="File.paramname">file</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+      </hashTree>
     </hashTree>
   </hashTree>
 </jmeterTestPlan>
