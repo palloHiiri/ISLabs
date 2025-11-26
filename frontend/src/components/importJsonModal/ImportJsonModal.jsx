@@ -1,4 +1,3 @@
-// javascript
 import React, { useState } from 'react';
 import './ImportJsonModal.css';
 import { cityService } from '../../services/cityService.js';
@@ -31,13 +30,33 @@ const ImportJsonModal = ({ isOpen, onClose, onImported }) => {
             if (result && result.status === 'SUCCESS') {
                 const duration = 2000;
                 showSuccess('Импорт успешно завершён', duration, true);
-                if (onImported) onImported();
+
+                if (window.cityWebSocket && window.cityWebSocket.readyState === WebSocket.OPEN) {
+                    window.cityWebSocket.send(JSON.stringify({
+                        type: 'IMPORT_FINISHED',
+                        importId: result.id,
+                        status: result.status,
+                        addedCount: result.addedCount
+                    }));
+                }
+
+                if (onImported) onImported(result);
                 await wait(duration);
             } else {
                 const msg = result && result.message ? result.message : 'Импорт завершился с ошибкой';
                 const duration = 2000;
                 showError(msg, duration, true);
                 setError(msg);
+
+                if (window.cityWebSocket && window.cityWebSocket.readyState === WebSocket.OPEN) {
+                    window.cityWebSocket.send(JSON.stringify({
+                        type: 'IMPORT_FAILED',
+                        importId: result?.id,
+                        status: result?.status,
+                        message: msg
+                    }));
+                }
+
                 await wait(duration);
             }
         } catch (e) {
@@ -45,6 +64,14 @@ const ImportJsonModal = ({ isOpen, onClose, onImported }) => {
             const duration = 2000;
             showError(msg, duration, true);
             setError(msg);
+
+            if (window.cityWebSocket && window.cityWebSocket.readyState === WebSocket.OPEN) {
+                window.cityWebSocket.send(JSON.stringify({
+                    type: 'IMPORT_FAILED',
+                    message: msg
+                }));
+            }
+
             await wait(duration);
         } finally {
             setLoading(false);

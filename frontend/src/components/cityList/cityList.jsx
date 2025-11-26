@@ -58,6 +58,7 @@ const CityList = () => {
         fetchCities();
 
         ws.current = new WebSocket(`/ws/cities`);
+        window.cityWebSocket = ws.current;
 
         ws.current.onopen = () => {
             console.log('WebSocket connected');

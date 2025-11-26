@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { cityService } from '../../services/cityService.js';
 import './ImportHistory.css';
@@ -12,6 +12,8 @@ const ImportHistory = () => {
     const [currentPage, setCurrentPage] = useState(0);
     const [pageSize, setPageSize] = useState(10);
     const [totalPages, setTotalPages] = useState(1);
+
+    const ws = useRef(null);
 
     const loadPage = async (page = 0, size = pageSize) => {
         setLoading(true);
@@ -47,6 +49,41 @@ const ImportHistory = () => {
 
     useEffect(() => {
         loadPage(currentPage, pageSize);
+
+        ws.current = new WebSocket(`/ws/cities`);
+
+        ws.current.onopen = () => {
+            console.log('Import WebSocket connected');
+        };
+
+        ws.current.onmessage = (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                console.log('Import WebSocket message received:', data);
+
+                if (data.type === 'CITY_ADDED' || data.type === 'CITY_UPDATED' || data.type === 'CITY_DELETED' ||
+                    data.type === 'IMPORT_FAILED') {
+                    console.log('Relevant event detected, refreshing import history...');
+                    loadPage(currentPage, pageSize);
+                }
+            } catch (error) {
+                console.error('Error parsing Import WebSocket message:', error);
+            }
+        };
+
+        ws.current.onerror = (error) => {
+            console.error('Import WebSocket error:', error);
+        };
+
+        ws.current.onclose = (event) => {
+            console.log('Import WebSocket disconnected:', event.code, event.reason);
+        };
+
+        return () => {
+            if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+                ws.current.close(1000, 'Component unmounting');
+            }
+        };
     }, [currentPage, pageSize]);
 
     const renderStatus = (status) => {
@@ -127,7 +164,7 @@ const ImportHistory = () => {
                                 ))}
                                 {items.length === 0 && (
                                     <tr>
-                                        <td className="table-cell" colSpan="3">Нет записей</td>
+                                        <td className="table-cell" colSpan="4">Нет записей</td>
                                     </tr>
                                 )}
                                 </tbody>
