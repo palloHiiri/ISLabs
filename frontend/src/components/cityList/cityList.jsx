@@ -10,7 +10,7 @@ import ImportJsonModal from "../importJsonModal/ImportJsonModal.jsx";
 
 const CityList = () => {
     const navigate = useNavigate();
-    const { showError, showWarning, NotificationComponent } = useNotification();
+    const { showError, showSuccess, showWarning, NotificationComponent } = useNotification();
     const [cities, setCities] = useState({ cities: [], totalItems: 0, totalPages: 0 });
     const [loading, setLoading] = useState(true);
     const [editingCity, setEditingCity] = useState(null);
@@ -350,6 +350,8 @@ const CityList = () => {
                     isOpen={showImportModal}
                     onClose={handleCloseImport}
                     onImported={handleImported}
+                    showSuccess={showSuccess}
+                    showError={showError}
                 />
             </div>
 

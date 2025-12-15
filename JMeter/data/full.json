@@ -1,39 +1,39 @@
 [
   {
-    "name": "Жук4",
+    "name": "Город1",
     "coordinates": { "x": 37.6173, "y": 55.7558 },
     "area": 2561.0,
     "population": 12678000,
     "timezone": 2,
     "carCode": 7,
-    "postalCode": "123456",
-    "oktmo": "12345678",
+    "postalCode": "555555",
+    "oktmo": "55555555",
     "establishmentDate": "1147-04-04",
     "capital": true,
     "government": "PATRIARCHY",
     "metersAboveSeaLevel": 156,
     "governor": {
       "passport": 4747474747,
-      "name": "Жук4"
+      "name": "Губернатор1"
     }
   },
 
   {
-    "name": "Жук4",
+    "name": "Город2",
     "coordinates": { "x": 37.6173, "y": 55.7558 },
     "area": 2561.0,
     "population": 12678000,
     "timezone": 3,
     "carCode": 77,
-    "postalCode": "123451",
-    "oktmo": "12345671",
+    "postalCode": "222222",
+    "oktmo": "22222222",
     "establishmentDate": "1147-04-04",
     "capital": true,
     "government": "PATRIARCHY",
     "metersAboveSeaLevel": 156,
     "governor": {
       "passport": 4747474747,
-      "name": "Жук4"
+      "name": "Губернатор1"
     }
   }
 
