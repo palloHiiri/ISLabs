@@ -5,7 +5,8 @@
 
 <hibernate-configuration>
     <session-factory>
-        <property name="hibernate.connection.datasource">java:/jdbc/MyDS</property>
+<!--        <property name="hibernate.connection.datasource">java:comp/env/jdbc/MyDS</property>-->
+        <property name="hibernate.connection.datasource">java:comp/env/jdbc/MyDS</property>
         <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
 
         <property name="hibernate.show_sql">true</property>

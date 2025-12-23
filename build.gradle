@@ -11,6 +11,10 @@ repositories {
     mavenCentral()
 }
 
+war {
+    archiveFileName = 'TestSborka-1.0.0.war'
+}
+
 dependencies {
     implementation 'org.springframework:spring-webmvc:6.2.10'
     implementation 'org.springframework:spring-context:6.2.10'
@@ -21,7 +25,7 @@ dependencies {
     implementation 'org.hibernate.validator:hibernate-validator:8.0.1.Final'
     implementation 'org.glassfish:jakarta.el:4.0.2'
 
-    compileOnly 'org.postgresql:postgresql:42.7.7'
+    implementation 'org.postgresql:postgresql:42.7.7'
 
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2'
