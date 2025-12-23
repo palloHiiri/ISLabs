@@ -6,14 +6,14 @@
     "population": 142000,
     "timezone": 4,
     "carCode": 29,
-    "postalCode": "184000",
-    "oktmo": "10102000",
+    "postalCode": "184030",
+    "oktmo": "10102030",
     "establishmentDate": "1899-07-01",
     "capital": false,
     "government": "PATRIARCHY",
     "metersAboveSeaLevel": 5,
     "governor": {
-      "passport": 9876154321,
+      "passport": 9876334321,
       "name": "Петрова"
     }
   }

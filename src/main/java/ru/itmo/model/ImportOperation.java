@@ -13,6 +13,8 @@ public class ImportOperation {
     private Integer addedCount;
     private String message;
     private LocalDateTime timestamp;
+    private String filename;
+    private String s3key;
 
     public ImportOperation() {
         this.timestamp = LocalDateTime.now();

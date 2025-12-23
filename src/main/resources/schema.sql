@@ -4,7 +4,9 @@ CREATE TABLE import_operations (
                                    status VARCHAR(20) NOT NULL,
                                    added_count INTEGER,
                                    message TEXT,
-                                   created_at TIMESTAMP NOT NULL DEFAULT now()
+                                   created_at TIMESTAMP NOT NULL DEFAULT now(),
+                                   filename VARCHAR(255),
+                                   s3key VARCHAR(500)
 );
 
 CREATE TABLE humans (
@@ -31,5 +33,3 @@ CREATE TABLE cities (
     oktmo INTEGER,
     governor_id BIGINT NOT NULL REFERENCES humans(id)
 );
-
-

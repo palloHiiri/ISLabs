@@ -8,6 +8,8 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.itmo.dto.request.CityRequestDto;
 import ru.itmo.dto.request.CoordinatesRequestDto;
 import ru.itmo.dto.request.HumanRequestDto;
+import ru.itmo.exception.DatabaseException;
+import ru.itmo.exception.FileStorageException;
 import ru.itmo.exception.ImportValidationException;
 import ru.itmo.model.ImportOperation;
 import ru.itmo.repository.ImportRepository;
@@ -20,7 +22,6 @@ import jakarta.validation.Validation;
 import jakarta.validation.ValidatorFactory;
 import org.springframework.transaction.annotation.Isolation;
 
-import java.io.InputStream;
 import java.util.*;
 @Service
 public class ImportService {
@@ -30,12 +31,20 @@ public class ImportService {
     private final Validator validator;
     private final CityValidator cityValidator;
     private final ImportOperationService importOperationService;
+    private final FileStorageService fileStorageService;
+
+    private volatile boolean simulateBusinessError = false;
+
+    public void setSimulateBusinessError(boolean simulate) {
+        this.simulateBusinessError = simulate;
+        System.out.println("simulateBusinessError set to: " + simulate);
+    }
 
     public ImportService(ObjectMapper objectMapper,
                          ImportRepository importRepo,
                          CityService cityService,
                          CityValidator cityValidator,
-                         ImportOperationService importOperationService) {
+                         ImportOperationService importOperationService, FileStorageService fileStorageService) {
         this.objectMapper = objectMapper;
         this.importRepo = importRepo;
         this.cityService = cityService;
@@ -43,17 +52,56 @@ public class ImportService {
         this.validator = factory.getValidator();
         this.cityValidator = cityValidator;
         this.importOperationService = importOperationService;
+        this.fileStorageService = fileStorageService;
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public ImportOperation importCities(MultipartFile file) {
-        ImportOperation op = importOperationService.createOperation();
+        String filename = file.getOriginalFilename();
+        String s3key = null;
+        ImportOperation op = null;
 
-        try (InputStream is = file.getInputStream()) {
-            List<CityRequestDto> list = objectMapper.readValue(is, new TypeReference<>() {});
+        try {
+            op = importOperationService.createOperation(filename, null);
+        } catch (Exception e) {
+            throw new DatabaseException("Failed to create import operation", e);
+        }
+
+        try {
+            s3key = fileStorageService.uploadFile(filename, file.getInputStream(), file.getSize());
+            op.setS3key(s3key);
+            importOperationService.updateS3Key(op, s3key);
+        } catch (FileStorageException e) {
+            importOperationService.updateStatus(op, "FAILED", 0, "File storage error: " + e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            if (s3key != null) {
+                try {
+                    fileStorageService.deleteFile(s3key);
+                } catch (Exception ignored) {}
+            }
+            if (op != null) {
+                try {
+                    importOperationService.updateStatus(op, "FAILED", 0, "File upload error: " + e.getMessage());
+                } catch (Exception ignored) {}
+            }
+            throw new FileStorageException("Failed to upload file", e);
+        }
+
+        try {
+            System.out.println("simulateBusinessError is: " + simulateBusinessError);
+            if (simulateBusinessError) {
+                System.out.println("Triggering NullPointerException...");
+//                String nullString = null;
+//                nullString.length();
+            }
+
+            List<CityRequestDto> list = objectMapper.readValue(file.getInputStream(), new TypeReference<>() {});
 
             if (list == null || list.isEmpty()) {
-                return importOperationService.updateStatus(op, "FAILED", 0, "Empty or invalid JSON array");
+                cleanupOnError(s3key);
+                importOperationService.updateStatus(op, "FAILED", 0, "Empty or invalid JSON array");
+                throw new ImportValidationException("Empty or invalid JSON array");
             }
 
             StringBuilder msg = new StringBuilder();
@@ -98,36 +146,60 @@ public class ImportService {
                     }
                 }
 
-
                 City entity = cityService.mapRequestToEntity(dto);
 
                 try {
                     cityValidator.validateUniqueness(entity, null);
+                    entities.add(entity);
                 } catch (Exception ex) {
                     msg.append("item ").append(i).append(": ")
                             .append(ex.getMessage()).append("; ");
                 }
-
-                entities.add(entity);
             }
 
             if (!msg.isEmpty()) {
-                importOperationService.updateStatus(op, "FAILED", 0, msg.toString());
-                throw new IllegalArgumentException("Validation errors during import");
+                cleanupOnError(s3key);
+                importOperationService.updateStatus(op, "FAILED", 0, "Validation errors: " + msg.toString());
+                throw new ImportValidationException("Validation errors: " + msg.toString());
             }
 
             int successCount = 0;
             for (City entity : entities) {
-                cityService.addCity(entity);
-                successCount++;
+                try {
+                    cityService.addCity(entity);
+                    successCount++;
+                } catch (Exception ex) {
+                    cleanupOnError(s3key);
+                    importOperationService.updateStatus(op, "FAILED", 0, "Failed to add cities: " + ex.getMessage());
+                    throw new DatabaseException("Failed to add cities to database", ex);
+                }
             }
 
             String status = successCount == entities.size() ? "SUCCESS" : "FAILED";
             return importOperationService.updateStatus(op, status, successCount, null);
 
+        } catch (FileStorageException | ImportValidationException e) {
+            throw e;
+        } catch (RuntimeException e) {
+            cleanupOnError(s3key);
+            try {
+                importOperationService.updateStatus(op, "FAILED", 0, "Business logic error: " + e.getMessage());
+            } catch (Exception ignored) {}
+            throw e;
         } catch (Exception e) {
-            importOperationService.updateStatus(op, "FAILED", 0, "Import error: " + e.getMessage());
-            throw new ImportValidationException("Import failed. Incorrect data in file", e);
+            cleanupOnError(s3key);
+            try {
+                importOperationService.updateStatus(op, "FAILED", 0, "Database error: " + e.getMessage());
+            } catch (Exception ignored) {}
+            throw new DatabaseException("Database error during import", e);
+        }
+    }
+
+    private void cleanupOnError(String s3key) {
+        if (s3key != null) {
+            try {
+                fileStorageService.deleteFile(s3key);
+            } catch (Exception ignored) {}
         }
     }
 
@@ -149,5 +221,10 @@ public class ImportService {
         resp.put("totalPages", totalPages);
         resp.put("pageSize", size);
         return resp;
+    }
+
+    @Transactional(readOnly = true, isolation = Isolation.REPEATABLE_READ)
+    public ImportOperation getImportOperationById(Long id) {
+        return importRepo.findById(id);
     }
 }

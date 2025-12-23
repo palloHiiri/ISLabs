@@ -125,6 +125,14 @@ const ImportHistory = () => {
         setCurrentPage(page);
     };
 
+    const downloadFile = async (id) => {
+        try {
+            await cityService.downloadImportFile(id);
+        } catch (e) {
+            setError(e.message || 'Ошибка скачивания файла');
+        }
+    };
+
     return (
         <div className="import-history-page">
             <div className="header">
@@ -150,6 +158,7 @@ const ImportHistory = () => {
                                     <th className="table-header">ID операции</th>
                                     <th className="table-header">Статус</th>
                                     <th className="table-header">Добавлено объектов</th>
+                                    <th className="table-header">Действия</th>
                                 </tr>
                                 </thead>
                                 <tbody className="table-body">
@@ -159,6 +168,15 @@ const ImportHistory = () => {
                                         <td className="table-cell status-cell">{renderStatus(op.status)}</td>
                                         <td className="table-cell number-cell">
                                             {String(op.status).toUpperCase() === 'SUCCESS' ? (op.addedCount ?? 0) : '-'}
+                                        </td>
+                                        <td className="table-cell">
+                                            <button
+                                                onClick={() => downloadFile(op.id)}
+                                                disabled={String(op.status).toUpperCase() !== 'SUCCESS'}
+                                                className="download-btn"
+                                            >
+                                                Скачать
+                                            </button>
                                         </td>
                                     </tr>
                                 ))}

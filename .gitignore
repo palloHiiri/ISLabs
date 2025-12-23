@@ -16,6 +16,10 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
+### Config files ###
+src/main/resources/db.properties
+src/main/resources/minio.properties
+
 ### Eclipse ###
 .apt_generated
 .classpath

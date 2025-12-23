@@ -318,6 +318,46 @@ class CityService {
         }
     }
 
+    async downloadImportFile(id) {
+        const url = `${API_BASE}/imports/${id}/download`;
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                let errorMessage = `Download failed: ${response.status}`;
+                try {
+                    const errorData = await response.json();
+                    errorMessage = errorData.error || errorMessage;
+                } catch (e) {
+                    // Ignore JSON parse error
+                }
+                throw new Error(errorMessage);
+            }
+            const blob = await response.blob();
+            const contentDisposition = response.headers.get('Content-Disposition');
+            const filename = contentDisposition ? contentDisposition.split('filename=')[1].replace(/"/g, '') : `import_${id}.json`;
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            link.click();
+            URL.revokeObjectURL(link.href);
+        } catch (error) {
+            alert('Ошибка скачивания: ' + error.message);
+        }
+    }
+
+    async simulateBusinessError(enable) {
+        try {
+            const response = await fetch(`${API_BASE}/simulate-error?enable=${enable}`, {
+                method: 'POST'
+            });
+            if (!response.ok) {
+                throw new Error(`Failed to set simulate error: ${response.status}`);
+            }
+            return await response.json();
+        } catch (error) {
+            throw new Error(`Failed to simulate error: ${error.message}`);
+        }
+    }
 }
 const cityService = new CityService();
 export { cityService };

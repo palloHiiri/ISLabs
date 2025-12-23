@@ -15,13 +15,16 @@ public class ImportOperationService {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public ImportOperation createOperation() {
+    public ImportOperation createOperation(String fileName, String s3key) {
         ImportOperation op = new ImportOperation();
         op.setStatus("RUNNING");
         op.setAddedCount(0);
         op.setMessage(null);
         Long id = importRepo.save(op);
         op.setId(id);
+        op.setS3key(s3key);
+        op.setFilename(fileName);
+        importRepo.update(op);
         return op;
     }
 
@@ -34,5 +37,11 @@ public class ImportOperationService {
         importRepo.update(op);
         return op;
     }
-}
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public ImportOperation updateS3Key(ImportOperation op, String s3key) {
+        op.setS3key(s3key);
+        importRepo.update(op);
+        return op;
+    }
+}

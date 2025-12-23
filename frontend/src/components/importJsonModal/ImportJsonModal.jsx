@@ -6,6 +6,7 @@ const ImportJsonModal = ({ isOpen, onClose, onImported, showSuccess, showError }
     const [file, setFile] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [simulateError, setSimulateError] = useState(false);
 
     useEffect(() => {
         if (isOpen) {
@@ -20,6 +21,19 @@ const ImportJsonModal = ({ isOpen, onClose, onImported, showSuccess, showError }
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
         setError('');
+    };
+
+    const handleSimulateToggle = async () => {
+        try {
+            const newValue = !simulateError;
+            console.log('Setting simulateBusinessError to:', newValue);
+            const result = await cityService.simulateBusinessError(newValue);
+            console.log('simulateBusinessError response:', result);
+            setSimulateError(newValue);
+        } catch (e) {
+            console.error('Failed to set simulateBusinessError:', e);
+            setError('Не удалось переключить симуляцию ошибки: ' + e.message);
+        }
     };
 
     const wait = (ms) => new Promise((res) => setTimeout(res, ms));
@@ -91,6 +105,18 @@ const ImportJsonModal = ({ isOpen, onClose, onImported, showSuccess, showError }
                     onChange={handleFileChange}
                 />
                 {error && <div className="import-error">{error}</div>}
+
+                <div className="simulate-error-toggle">
+                    <label>
+                        <input
+                            type="checkbox"
+                            checked={simulateError}
+                            onChange={handleSimulateToggle}
+                        />
+                        Симулировать ошибку бизнес-логики (для тестирования)
+                    </label>
+                </div>
+
                 <div className="modal-actions">
                     <button onClick={onClose} disabled={loading}>Отмена</button>
                     <button onClick={handleImport} disabled={loading}>

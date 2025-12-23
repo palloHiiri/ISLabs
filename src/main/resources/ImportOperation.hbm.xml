@@ -25,5 +25,13 @@
         <property name="timestamp" type="java.time.LocalDateTime">
             <column name="created_at" not-null="true"/>
         </property>
+
+        <property name="filename" type="java.lang.String">
+            <column name="filename" length="255"/>
+        </property>
+
+        <property name="s3key" type="java.lang.String">
+            <column name="s3key" length="500"/>
+        </property>
     </class>
 </hibernate-mapping>
