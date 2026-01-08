@@ -5,6 +5,7 @@
 
 <hibernate-mapping package="ru.itmo.model">
     <class name="ru.itmo.model.ImportOperation" table="import_operations">
+        <cache usage="nonstrict-read-write" region="ru.itmo.model.ImportOperation"/>
         <id name="id" type="java.lang.Long">
             <column name="id"/>
             <generator class="identity"/>

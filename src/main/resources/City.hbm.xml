@@ -5,6 +5,7 @@
 
 <hibernate-mapping package="ru.itmo.model">
     <class name="ru.itmo.model.City" table="cities">
+        <cache usage="nonstrict-read-write" region="ru.itmo.model.City"/>
         <id name="id" type="java.lang.Long">
             <column name="id"/>
             <generator class="identity"/>

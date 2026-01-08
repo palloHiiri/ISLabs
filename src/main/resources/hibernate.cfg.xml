@@ -5,7 +5,6 @@
 
 <hibernate-configuration>
     <session-factory>
-<!--        <property name="hibernate.connection.datasource">java:comp/env/jdbc/MyDS</property>-->
         <property name="hibernate.connection.datasource">java:comp/env/jdbc/MyDS</property>
         <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
 
@@ -16,8 +15,17 @@
         <property name="hibernate.hbm2ddl.import_files">schema.sql</property>
         <property name="hibernate.current_session_context_class">org.springframework.orm.hibernate5.SpringSessionContext</property>
 
+        <property name="hibernate.cache.region.factory_class">org.hibernate.cache.jcache.internal.JCacheRegionFactory</property>
+        <property name="hibernate.javax.cache.provider">org.ehcache.jsr107.EhcacheCachingProvider</property>
+        <property name="hibernate.javax.cache.uri">/ehcache.xml</property>
+        <property name="hibernate.cache.use_second_level_cache">true</property>
+        <property name="hibernate.cache.use_query_cache">true</property>
+        <property name="hibernate.generate_statistics">true</property>
+
         <mapping resource="City.hbm.xml"/>
         <mapping resource="Human.hbm.xml"/>
         <mapping resource="ImportOperation.hbm.xml"/>
+
+
     </session-factory>
 </hibernate-configuration>

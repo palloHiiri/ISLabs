@@ -22,12 +22,11 @@ public class CityRepository {
 
     public City findById(Long id) {
         Session session = sessionFactory.getCurrentSession();
-        Query<City> query = session.createQuery(
-                "SELECT c FROM City c LEFT JOIN FETCH c.governor WHERE c.id = :id",
-                City.class
-        );
-        query.setParameter("id", id);
-        return query.uniqueResult();
+        City city = session.get(City.class, id);
+       if (city != null && city.getGovernor() != null) {
+            org.hibernate.Hibernate.initialize(city.getGovernor());
+        }
+        return city;
     }
 
     public void delete(City city) {
@@ -334,18 +333,8 @@ public class CityRepository {
         return query.uniqueResult() > 0;
     }
 
-    public City findCityByGovernorPassport(Long passport) {
-        Session session = sessionFactory.getCurrentSession();
-        Query<City> query = session.createQuery("FROM City c WHERE c.governor.passport = :passport", City.class);
-        query.setParameter("passport", passport);
-        return query.uniqueResult();
-    }
-
     public List<Human> findAllGovernors() {
         Session session = sessionFactory.getCurrentSession();
-        return session.createQuery(
-                "SELECT DISTINCT c.governor FROM City c WHERE c.governor IS NOT NULL",
-                Human.class
-        ).list();
+        Query<City> query = session.createQuery("FROM City c WHERE c.governor.passport = :passport", City.class);
     }
 }

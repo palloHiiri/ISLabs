@@ -51,5 +51,18 @@ dependencies {
 
     implementation 'software.amazon.awssdk:s3:2.20.162'
 
+    implementation 'org.hibernate.orm:hibernate-jcache:6.5.2.Final'
+    implementation('org.ehcache:ehcache:3.10.8') {
+        capabilities {
+            requireCapability('org.ehcache:ehcache-jakarta')
+        }
+    }
 
+    // Jakarta XML Bind (required for Ehcache XML configuration)
+    implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.0'
+    implementation 'org.glassfish.jaxb:jaxb-runtime:4.0.3'
+
+    implementation 'org.springframework:spring-aop:6.2.10'
+    implementation 'org.aspectj:aspectjweaver:1.9.21'
+    implementation 'org.aspectj:aspectjrt:1.9.21'
 }
