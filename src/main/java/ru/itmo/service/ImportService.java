@@ -60,7 +60,15 @@ public class ImportService {
             throw new FileStorageException("Failed to upload file", e);
         }
 
-        return importProcessingService.processImportFile(file, s3key, op);
+        try {
+            return importProcessingService.processImportFile(file, s3key, op);
+        } catch (Exception e) {
+            if (s3key != null) {
+                fileStorageService.deleteFile(s3key);
+            }
+            importOperationService.updateStatus(op, "FAILED", 0, "File upload error: " + e.getMessage());
+            throw e;
+        }
     }
 
     @Transactional(readOnly = true, isolation = Isolation.REPEATABLE_READ)
