@@ -335,6 +335,9 @@ public class CityRepository {
 
     public List<Human> findAllGovernors() {
         Session session = sessionFactory.getCurrentSession();
-        Query<City> query = session.createQuery("FROM City c WHERE c.governor.passport = :passport", City.class);
+        return session.createQuery(
+                "SELECT DISTINCT c.governor FROM City c WHERE c.governor IS NOT NULL",
+                Human.class
+        ).list();
     }
 }
